@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Archive } from 'lucide-react';
+import { GanttChartSquare } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -14,19 +14,22 @@ import { Label } from '@/components/ui/label';
 
 export default function LoginPage() {
   return (
-    <div className="flex flex-col items-center gap-4">
-      <div className="flex items-center gap-2 text-2xl font-bold text-primary">
-        <Archive className="h-8 w-8" />
-        <h1 className="font-headline">Arsipku</h1>
+    <div className="w-full lg:grid lg:min-h-screen lg:grid-cols-2">
+      <div className="hidden bg-sidebar lg:flex flex-col items-center justify-center p-8 text-sidebar-foreground">
+        <div className="flex items-center gap-4 text-4xl font-bold">
+            <GanttChartSquare className="h-12 w-12" />
+            <h1 className="font-headline">POLARIX</h1>
+        </div>
+        <p className="mt-4 text-lg text-sidebar-foreground/80">Arsip Digital Tanpa Batas Struktur</p>
       </div>
-      <Card className="w-full max-w-sm">
-        <CardHeader>
-          <CardTitle className="text-2xl">Login</CardTitle>
-          <CardDescription>
-            Enter your email below to login to your account.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+      <div className="flex items-center justify-center py-12">
+        <div className="mx-auto grid w-[350px] gap-6">
+           <div className="grid gap-2 text-center">
+            <h1 className="text-3xl font-bold font-headline">Login</h1>
+            <p className="text-balance text-muted-foreground">
+              Masukkan email Anda untuk masuk ke sistem
+            </p>
+          </div>
           <div className="grid gap-4">
             <div className="grid gap-2">
               <Label htmlFor="email">Email</Label>
@@ -43,7 +46,7 @@ export default function LoginPage() {
                   href="#"
                   className="ml-auto inline-block text-sm underline"
                 >
-                  Forgot your password?
+                  Lupa password?
                 </Link>
               </div>
               <Input id="password" type="password" />
@@ -52,8 +55,8 @@ export default function LoginPage() {
               <Link href="/dashboard">Login</Link>
             </Button>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }

@@ -15,7 +15,7 @@ export function AppHeader() {
             <span className="sr-only">Toggle navigation menu</span>
           </Button>
         </SheetTrigger>
-        <SheetContent side="left" className="flex flex-col">
+        <SheetContent side="left" className="flex flex-col bg-sidebar text-sidebar-foreground border-sidebar-border p-0">
           <AppSidebarNav isMobile={true} />
         </SheetContent>
       </Sheet>

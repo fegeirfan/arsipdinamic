@@ -15,8 +15,8 @@ const lexend = Lexend({
 });
 
 export const metadata: Metadata = {
-  title: 'Arsipku: Dynamic Records',
-  description: 'Sistem Informasi Manajemen Arsip Dinamis by Firebase Studio',
+  title: 'POLARIX: Arsip Digital Tanpa Batas Struktur',
+  description: 'Kelola arsip secara fleksibel, dinamis, dan terkontrol tanpa coding. Dibangun dengan Firebase Studio.',
 };
 
 export default function RootLayout({

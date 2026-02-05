@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link';
-import { Archive, Home, Table, Users, Settings, Download } from 'lucide-react';
+import { GanttChartSquare, Home, Table, Users, Settings, Download } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 
@@ -19,10 +19,10 @@ export function AppSidebarNav({ isMobile = false }: { isMobile?: boolean }) {
     <nav className={cn("grid items-start px-2 text-sm font-medium lg:px-4", isMobile && "gap-6 text-lg")}>
        <Link
         href="/dashboard"
-        className="mb-4 flex items-center gap-2 text-lg font-semibold"
+        className="my-4 flex items-center gap-2 text-lg font-semibold"
       >
-        <Archive className="h-6 w-6 text-primary" />
-        <span className="font-headline">Arsipku</span>
+        <GanttChartSquare className="h-6 w-6 text-sidebar-accent" />
+        <span className="font-headline">POLARIX</span>
       </Link>
       {navItems.map(({ href, icon: Icon, label }) => {
         const isActive = pathname.startsWith(href) && (href !== '/dashboard' || pathname === '/dashboard');
@@ -31,8 +31,8 @@ export function AppSidebarNav({ isMobile = false }: { isMobile?: boolean }) {
             key={href}
             href={href}
             className={cn(
-              'flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary',
-              isActive && 'bg-muted text-primary',
+              'flex items-center gap-3 rounded-lg px-3 py-2 text-sidebar-foreground/80 transition-all hover:text-sidebar-foreground hover:bg-sidebar-accent/10',
+              isActive && 'bg-sidebar-accent/20 text-sidebar-foreground',
               isMobile && "text-2xl"
             )}
           >

@@ -26,11 +26,11 @@ export default function SettingsPage() {
         <CardContent className="grid gap-6">
           <div className="grid gap-3">
             <Label htmlFor="appName">Application Name</Label>
-            <Input id="appName" defaultValue="Arsipku" />
+            <Input id="appName" defaultValue="POLARIX" />
           </div>
           <div className="grid gap-3">
             <Label htmlFor="adminEmail">Admin Email</Label>
-            <Input id="adminEmail" type="email" defaultValue="admin@arsipku.com" />
+            <Input id="adminEmail" type="email" defaultValue="admin@polarix.com" />
           </div>
         </CardContent>
         <CardFooter className='border-t px-6 py-4'>
