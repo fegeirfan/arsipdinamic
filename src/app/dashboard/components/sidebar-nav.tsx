@@ -1,15 +1,15 @@
 'use client';
 import Link from 'next/link';
-import { Archive, Home, Table, Users, Bell, Settings } from 'lucide-react';
+import { Archive, Home, Table, Users, Settings, Download } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 
 const navItems = [
   { href: '/dashboard', icon: Home, label: 'Home' },
   { href: '/dashboard/tables', icon: Table, label: 'Tables' },
   { href: '/dashboard/users', icon: Users, label: 'Users' },
+  { href: '/dashboard/backup', icon: Download, label: 'Backup & Export' },
+  { href: '/dashboard/settings', icon: Settings, label: 'Settings' },
 ];
 
 export function AppSidebarNav({ isMobile = false }: { isMobile?: boolean }) {
