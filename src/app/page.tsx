@@ -1,7 +1,9 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Zap, ShieldCheck, DatabaseZap, Users, GanttChartSquare, ArrowRight, UserCheck, Lock } from 'lucide-react';
+import { Zap, ShieldCheck, DatabaseZap, Users, GanttChartSquare, ArrowRight, UserCheck, Lock, PlusSquare, Settings2, FileCheck } from 'lucide-react';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 const featureCards = [
   {
@@ -29,27 +31,34 @@ const featureCards = [
 const howItWorksSteps = [
     {
         step: 1,
+        icon: PlusSquare,
         title: "Buat Tabel Baru",
         description: "Definisikan nama dan tujuan tabel arsip Anda, misalnya 'Surat Masuk' atau 'Dokumen Proyek'."
     },
     {
         step: 2,
+        icon: Settings2,
         title: "Atur Strukturnya",
         description: "Gunakan table builder visual untuk menambahkan kolom yang Anda butuhkan: teks, angka, tanggal, file, dan lainnya."
     },
     {
         step: 3,
+        icon: Users,
         title: "Tentukan Hak Akses",
         description: "Atur siapa saja yang boleh mengakses tabel dan apa yang bisa mereka lakukan. Tunjuk PIC untuk pengelolaan."
     },
     {
         step: 4,
+        icon: FileCheck,
         title: "Mulai Mengelola Arsip",
         description: "Staf yang ditunjuk dapat langsung mengisi dan mengelola data arsip sesuai dengan struktur yang telah Anda buat."
     }
 ];
 
 export default function Home() {
+  const heroImage = PlaceHolderImages.find(p => p.id === 'hero-abstract');
+  const solutionImage = PlaceHolderImages.find(p => p.id === 'solution-visual');
+
   return (
     <div className="flex min-h-screen flex-col bg-background font-body text-foreground">
       {/* Header */}
@@ -75,28 +84,36 @@ export default function Home() {
 
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="relative w-full py-20 md:py-32 lg:py-40">
-           <div
-            aria-hidden="true"
-            className="absolute inset-0 top-0 -z-10 h-full w-full bg-background"
-            style={{
-              backgroundImage: 'radial-gradient(circle at 50% 0, hsl(var(--primary)/0.1), transparent 60%)',
-            }}
-          />
-          <div className="container text-center">
-            <h1 className="font-headline text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl md:text-6xl lg:text-7xl">
-              Arsip Digital Tanpa Batas Struktur
-            </h1>
-            <p className="mx-auto mt-6 max-w-3xl text-lg text-muted-foreground md:text-xl">
-              Bebaskan data Anda dari struktur kaku. Dengan POLARIX, Anda bisa membangun, mengubah, dan mengelola arsip digital secara dinamis—tanpa perlu satu baris kode pun.
-            </p>
-            <div className="mt-10 flex justify-center gap-4">
-              <Button size="lg" asChild>
-                <Link href="/auth/login">Masuk ke Sistem <ArrowRight className="ml-2 h-5 w-5" /></Link>
-              </Button>
-              <Button size="lg" variant="outline" asChild>
-                 <Link href="#fitur">Lihat Fitur</Link>
-              </Button>
+        <section className="w-full py-20 md:py-28">
+          <div className="container grid gap-8 lg:grid-cols-2 lg:gap-16 items-center">
+            <div className="flex flex-col items-start text-left">
+              <h1 className="font-headline text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl md:text-6xl">
+                Arsip Digital Tanpa Batas Struktur
+              </h1>
+              <p className="mt-6 max-w-xl text-lg text-muted-foreground md:text-xl">
+                Bebaskan data Anda dari struktur kaku. Dengan POLARIX, Anda bisa membangun, mengubah, dan mengelola arsip digital secara dinamis—tanpa perlu satu baris kode pun.
+              </p>
+              <div className="mt-10 flex flex-wrap gap-4">
+                <Button size="lg" asChild>
+                  <Link href="/auth/login">Masuk ke Sistem <ArrowRight className="ml-2 h-5 w-5" /></Link>
+                </Button>
+                <Button size="lg" variant="outline" asChild>
+                    <Link href="#fitur">Lihat Fitur</Link>
+                </Button>
+              </div>
+            </div>
+            <div className="flex items-center justify-center lg:justify-end">
+              {heroImage && (
+                <Image
+                  src={heroImage.imageUrl}
+                  alt={heroImage.description}
+                  width={600}
+                  height={500}
+                  className="rounded-xl shadow-2xl ring-1 ring-border"
+                  data-ai-hint={heroImage.imageHint}
+                  priority
+                />
+              )}
             </div>
           </div>
         </section>
@@ -109,12 +126,24 @@ export default function Home() {
                     <p className="text-muted-foreground text-lg">
                         Sistem arsip konvensional seringkali memaksa Anda mengikuti struktur data yang sudah mati. Butuh kolom baru? Perlu mengubah format? Anda harus menunggu tim IT, memperlambat alur kerja, dan menghambat inovasi. Data Anda seolah terpenjara.
                     </p>
+                    <div className="mt-6 rounded-lg border bg-card p-8 shadow-sm">
+                         <h2 className="font-headline text-3xl font-bold tracking-tight text-primary">Solusi POLARIX: Kebebasan Terstruktur</h2>
+                         <p className="text-muted-foreground text-lg">
+                            Kami memberikan kontrol kembali ke tangan Anda. POLARIX memungkinkan Anda, sang pemilik data, untuk mendefinisikan sendiri struktur arsip secara visual. Fleksibel, cepat, dan tetap aman terkendali dengan manajemen hak akses yang detail.
+                        </p>
+                    </div>
                 </div>
-                <div className="space-y-4 rounded-lg border bg-card p-8 shadow-sm">
-                     <h2 className="font-headline text-3xl font-bold tracking-tight text-primary">Solusi POLARIX: Kebebasan Terstruktur</h2>
-                     <p className="text-muted-foreground text-lg">
-                        Kami memberikan kontrol kembali ke tangan Anda. POLARIX memungkinkan Anda, sang pemilik data, untuk mendefinisikan sendiri struktur arsip secara visual. Fleksibel, cepat, dan tetap aman terkendali dengan manajemen hak akses yang detail.
-                    </p>
+                 <div className="flex items-center justify-center">
+                    {solutionImage && (
+                        <Image
+                            src={solutionImage.imageUrl}
+                            alt={solutionImage.description}
+                            width={600}
+                            height={400}
+                            className="rounded-xl shadow-2xl ring-1 ring-border"
+                            data-ai-hint={solutionImage.imageHint}
+                        />
+                    )}
                 </div>
             </div>
         </section>
@@ -157,13 +186,13 @@ export default function Home() {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                      {howItWorksSteps.map((step) => (
-                        <div key={step.step} className="p-6">
+                        <div key={step.step} className="flex flex-col items-center text-center p-6">
                              <div className="flex items-center mb-4">
-                                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground font-bold text-lg">
-                                    {step.step}
+                                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-primary">
+                                    <step.icon className="h-8 w-8" />
                                 </div>
-                                <h3 className="ml-4 font-headline text-xl font-semibold">{step.title}</h3>
                             </div>
+                            <h3 className="mb-2 font-headline text-xl font-semibold">{step.title}</h3>
                             <p className="text-muted-foreground">{step.description}</p>
                         </div>
                      ))}

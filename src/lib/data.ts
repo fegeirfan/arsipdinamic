@@ -1,10 +1,14 @@
 import type { User, ArchiveTable, ArchiveColumn, ArchiveRecord, TablePermission } from './types';
+import { PlaceHolderImages } from './placeholder-images';
+
+const findImage = (id: string) => PlaceHolderImages.find(p => p.id === id)?.imageUrl || '';
+
 
 export const users: User[] = [
-  { id: 'user-1', name: 'Admin Utama', email: 'admin@polarix.com', role: 'admin', avatarUrl: 'https://picsum.photos/seed/101/100/100' },
-  { id: 'user-2', name: 'Budi Santoso', email: 'budi@polarix.com', role: 'staff', avatarUrl: 'https://picsum.photos/seed/102/100/100' },
-  { id: 'user-3', name: 'Citra Lestari', email: 'citra@polarix.com', role: 'staff', avatarUrl: 'https://picsum.photos/seed/103/100/100' },
-  { id: 'user-4', name: 'Dewi Anggraini', email: 'dewi@polarix.com', role: 'staff', avatarUrl: 'https://picsum.photos/seed/104/100/100' },
+  { id: 'user-1', name: 'Admin Utama', email: 'admin@polarix.com', role: 'admin', avatarUrl: findImage('avatar-1') },
+  { id: 'user-2', name: 'Budi Santoso', email: 'budi@polarix.com', role: 'staff', avatarUrl: findImage('avatar-2') },
+  { id: 'user-3', name: 'Citra Lestari', email: 'citra@polarix.com', role: 'staff', avatarUrl: findImage('avatar-3') },
+  { id: 'user-4', name: 'Dewi Anggraini', email: 'dewi@polarix.com', role: 'staff', avatarUrl: findImage('avatar-4') },
 ];
 
 export const archiveTables: ArchiveTable[] = [
