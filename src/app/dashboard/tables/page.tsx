@@ -9,6 +9,7 @@ import {
   Eye,
   Settings2,
   Trash2,
+  Search,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -32,6 +33,7 @@ import { archiveTables, users } from '@/lib/data';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { format } from 'date-fns';
+import { Input } from '@/components/ui/input';
 
 export default function TablesPage() {
 
@@ -43,11 +45,21 @@ export default function TablesPage() {
     <>
       <div className="flex items-center justify-between">
         <h1 className="text-lg font-semibold md:text-2xl">Archive Tables</h1>
-        <Button asChild>
-          <Link href="/dashboard/tables/create">
-            <PlusCircle className="mr-2 h-4 w-4" /> Create Table
-          </Link>
-        </Button>
+        <div className="flex items-center gap-2">
+          <div className="relative">
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              type="search"
+              placeholder="Search tables..."
+              className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[320px]"
+            />
+          </div>
+          <Button asChild>
+            <Link href="/dashboard/tables/create">
+              <PlusCircle className="mr-2 h-4 w-4" /> Create Table
+            </Link>
+          </Button>
+        </div>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">

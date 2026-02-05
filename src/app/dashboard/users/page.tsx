@@ -1,4 +1,4 @@
-import { PlusCircle } from 'lucide-react';
+import { PlusCircle, Search } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -18,15 +18,26 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { users } from '@/lib/data';
+import { Input } from '@/components/ui/input';
 
 export default function UsersPage() {
   return (
     <>
       <div className="flex items-center justify-between">
         <h1 className="text-lg font-semibold md:text-2xl">User Management</h1>
-        <Button>
-          <PlusCircle className="mr-2 h-4 w-4" /> Invite User
-        </Button>
+        <div className="flex items-center gap-2">
+          <div className="relative">
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              type="search"
+              placeholder="Search users..."
+              className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[320px]"
+            />
+          </div>
+          <Button>
+            <PlusCircle className="mr-2 h-4 w-4" /> Invite User
+          </Button>
+        </div>
       </div>
       <Card>
         <CardHeader>
