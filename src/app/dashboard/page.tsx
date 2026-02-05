@@ -24,6 +24,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { archiveTables, users } from '@/lib/data';
+import { format } from 'date-fns';
 
 export default function Dashboard() {
   const getPic = (picId: string) => users.find(u => u.id === picId);
@@ -137,7 +138,7 @@ export default function Dashboard() {
                       {getPic(table.picIds[0])?.name}
                     </TableCell>
                     <TableCell className="text-right">
-                       {new Date(table.createdAt).toLocaleDateString()}
+                       {format(new Date(table.createdAt), 'MMM d, yyyy')}
                     </TableCell>
                   </TableRow>
                 ))}

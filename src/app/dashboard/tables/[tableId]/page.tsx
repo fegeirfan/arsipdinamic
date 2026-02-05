@@ -26,6 +26,8 @@ import {
 import { archiveColumns, archiveRecords, archiveTables } from '@/lib/data';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { format } from 'date-fns';
+import Link from 'next/link';
 
 export default function TableDataPage({
   params,
@@ -44,7 +46,7 @@ export default function TableDataPage({
     const value = record.data[column.id];
     switch (column.type) {
       case 'date':
-        return value ? new Date(value).toLocaleDateString() : 'N/A';
+        return value ? format(new Date(value), 'MMM d, yyyy') : 'N/A';
       case 'file':
         return value ? <Link href={value} className="text-primary underline" target="_blank">{value.split('/').pop()}</Link> : 'No file';
       case 'select':

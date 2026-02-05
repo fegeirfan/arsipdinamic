@@ -31,6 +31,7 @@ import {
 import { archiveTables, users } from '@/lib/data';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { format } from 'date-fns';
 
 export default function TablesPage() {
 
@@ -105,7 +106,7 @@ export default function TablesPage() {
                   ))}
                   </TooltipProvider>
                 </div>
-                <span className="text-xs text-muted-foreground">Created {new Date(table.createdAt).toLocaleDateString()}</span>
+                <span className="text-xs text-muted-foreground">Created {format(new Date(table.createdAt), 'MMM d, yyyy')}</span>
               </CardFooter>
             </Card>
           );
