@@ -35,7 +35,6 @@ export default function LoginPage() {
                 type="email"
                 placeholder="m@example.com"
                 required
-                defaultValue="admin@arsipku.com"
               />
             </div>
             <div className="grid gap-2">
@@ -48,14 +47,11 @@ export default function LoginPage() {
                   Forgot your password?
                 </Link>
               </div>
-              <Input id="password" type="password" required defaultValue="password" />
+              <Input id="password" type="password" required />
             </div>
             <Button type="submit" className="w-full" asChild>
               <Link href="/dashboard">Login</Link>
             </Button>
-            <div className="mt-4 text-center text-sm">
-              Powered by Supabase
-            </div>
           </div>
         </CardContent>
       </Card>
