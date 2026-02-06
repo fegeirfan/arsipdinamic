@@ -9,8 +9,26 @@ import {
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
+import { createClient } from '@/utils/supabase/server';
+import { redirect } from 'next/navigation';
 
-export default function SettingsPage() {
+export default async function SettingsPage() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect('/auth/login');
+  }
+
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', user.id)
+    .single();
+
+  if (profile?.role !== 'admin') {
+    redirect('/dashboard');
+  }
   return (
     <>
       <div className="flex items-center justify-between">
@@ -34,8 +52,8 @@ export default function SettingsPage() {
           </div>
         </CardContent>
         <CardFooter className='border-t px-6 py-4'>
-            <div className='flex-1' />
-            <Button>Save Settings</Button>
+          <div className='flex-1' />
+          <Button>Save Settings</Button>
         </CardFooter>
       </Card>
     </>

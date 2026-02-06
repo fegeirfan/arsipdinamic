@@ -1,23 +1,35 @@
 'use client';
 import Link from 'next/link';
-import { GanttChartSquare, Home, Table, Users, Settings, Download } from 'lucide-react';
+import { GanttChartSquare, Home, Table, Users, Settings, Download, Star, Clock, User as UserIcon } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 
-const navItems = [
-  { href: '/dashboard', icon: Home, label: 'Home' },
-  { href: '/dashboard/tables', icon: Table, label: 'Tables' },
-  { href: '/dashboard/users', icon: Users, label: 'Users' },
-  { href: '/dashboard/backup', icon: Download, label: 'Backup & Export' },
-  { href: '/dashboard/settings', icon: Settings, label: 'Settings' },
+const adminNavItems = [
+  { href: '/dashboard', icon: Home, label: 'Dashboard' },
+  { href: '/dashboard/teams', icon: Users, label: 'Team & PIC' },
+  { href: '/dashboard/tables', icon: Table, label: 'Tabel Arsip' },
+  { href: '/dashboard/access', icon: Star, label: 'Akses & Permintaan' },
+  { href: '/dashboard/users', icon: UserIcon, label: 'User' },
+  { href: '/dashboard/audit', icon: Clock, label: 'Audit Log' },
+  { href: '/dashboard/settings', icon: Settings, label: 'Pengaturan Sistem' },
 ];
 
-export function AppSidebarNav({ isMobile = false }: { isMobile?: boolean }) {
+const userNavItems = [
+  { href: '/dashboard', icon: Home, label: 'Dashboard' },
+  { href: '/dashboard/my-team', icon: Table, label: 'Arsip Tim Saya' },
+  { href: '/dashboard/browse', icon: Star, label: 'Jelajahi Tabel' },
+  { href: '/dashboard/favorites', icon: Star, label: 'Favorit' },
+  { href: '/dashboard/activity', icon: Clock, label: 'Aktivitas Saya' },
+  { href: '/dashboard/profile', icon: UserIcon, label: 'Profil' },
+];
+
+export function AppSidebarNav({ isMobile = false, role }: { isMobile?: boolean; role: string }) {
   const pathname = usePathname();
+  const navItems = role === 'admin' ? adminNavItems : userNavItems;
 
   return (
     <nav className={cn("grid items-start px-2 text-sm font-medium lg:px-4", isMobile && "gap-6 text-lg")}>
-       <Link
+      <Link
         href="/dashboard"
         className="my-4 flex items-center gap-2 text-lg font-semibold"
       >

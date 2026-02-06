@@ -5,7 +5,7 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { AppSidebarNav } from './sidebar-nav';
 
-export function AppHeader() {
+export function AppHeader({ role }: { role: string }) {
   return (
     <header className="flex h-14 items-center gap-4 border-b bg-card px-4 lg:h-[60px] lg:px-6">
       <Sheet>
@@ -16,7 +16,7 @@ export function AppHeader() {
           </Button>
         </SheetTrigger>
         <SheetContent side="left" className="flex flex-col bg-sidebar text-sidebar-foreground border-sidebar-border p-0">
-          <AppSidebarNav isMobile={true} />
+          <AppSidebarNav isMobile={true} role={role} />
         </SheetContent>
       </Sheet>
       <div className="w-full flex-1" />
