@@ -105,7 +105,7 @@ export async function createTableFromMyArchives(formData: FormData) {
         .insert({
             name,
             description,
-            team_id: teamId,
+            team_id: teamId || null,
             team_pic_id: picId,
             visibility,
             created_by: user.id,
@@ -115,8 +115,16 @@ export async function createTableFromMyArchives(formData: FormData) {
         .single()
 
     if (error) {
+        // eslint-disable-next-line no-console
         console.error('Error creating table:', error)
-        throw new Error('Gagal membuat tabel')
+        // Provide more specific error message
+        if (error.message.includes('null value in column "team_id"')) {
+            throw new Error('Team tidak valid. Silakan pilih team yang tersedia.')
+        }
+        if (error.message.includes('violates row level security policy')) {
+            throw new Error('Anda tidak memiliki izin untuk membuat tabel di team ini. Pastikan Anda adalah PIC team tersebut.')
+        }
+        throw new Error('Gagal membuat tabel: ' + error.message)
     }
 
     revalidatePath('/dashboard/my-archives')

@@ -1,58 +1,46 @@
+"use client";
+
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Zap, ShieldCheck, DatabaseZap, Users, GanttChartSquare, ArrowRight, UserCheck, Lock, PlusSquare, Settings2, FileCheck } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import {
+  Zap,
+  ShieldCheck,
+  DatabaseZap,
+  Users,
+  GanttChartSquare,
+  ArrowRight,
+  UserCheck,
+  Lock,
+  CheckCircle2,
+  Layers,
+  LayoutDashboard,
+  MousePointerClick
+} from 'lucide-react';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 
-const featureCards = [
+const features = [
   {
-    icon: <DatabaseZap className="h-10 w-10 text-accent" />,
-    title: 'Dynamic Table Builder',
-    description: 'Buat tabel arsip dari nol. Tambah, ubah, dan atur kolom kapan saja tanpa migrasi atau bantuan teknis.',
+    icon: <DatabaseZap className="h-6 w-6" />,
+    title: 'Dynamic Builder',
+    description: 'Ubah struktur data kapan saja tanpa coding. Tambah kolom baru dalam hitungan detik.',
   },
   {
-    icon: <ShieldCheck className="h-10 w-10 text-accent" />,
-    title: 'Role & Permission Granular',
-    description: 'Kontrol penuh siapa yang bisa melihat, menambah, mengubah, atau menghapus data di setiap tabel.',
+    icon: <ShieldCheck className="h-6 w-6" />,
+    title: 'Secure Access',
+    description: 'Sistem permission bertingkat memastikan data hanya dilihat oleh yang berhak.',
   },
   {
-    icon: <UserCheck className="h-10 w-10 text-accent" />,
-    title: 'Penanggung Jawab (PIC)',
-    description: 'Tunjuk satu atau lebih staf sebagai PIC untuk mengelola tabel spesifik, mendelegasikan tanggung jawab dengan jelas.',
+    icon: <Users className="h-6 w-6" />,
+    title: 'Team Collaboration',
+    description: 'Delegasikan tugas dengan sistem PIC untuk setiap tabel arsip.',
   },
   {
-    icon: <Lock className="h-10 w-10 text-accent" />,
-    title: 'Public & Private Archive',
-    description: 'Tentukan visibilitas setiap arsip. Pisahkan data publik dari dokumen internal yang bersifat rahasia.',
+    icon: <Layers className="h-6 w-6" />,
+    title: 'Flexible Types',
+    description: 'Dukung berbagai tipe data: teks, tanggal, file, angka, dan banyak lagi.',
   }
-];
-
-const howItWorksSteps = [
-    {
-        step: 1,
-        icon: PlusSquare,
-        title: "Buat Tabel Baru",
-        description: "Definisikan nama dan tujuan tabel arsip Anda, misalnya 'Surat Masuk' atau 'Dokumen Proyek'."
-    },
-    {
-        step: 2,
-        icon: Settings2,
-        title: "Atur Strukturnya",
-        description: "Gunakan table builder visual untuk menambahkan kolom yang Anda butuhkan: teks, angka, tanggal, file, dan lainnya."
-    },
-    {
-        step: 3,
-        icon: Users,
-        title: "Tentukan Hak Akses",
-        description: "Atur siapa saja yang boleh mengakses tabel dan apa yang bisa mereka lakukan. Tunjuk PIC untuk pengelolaan."
-    },
-    {
-        step: 4,
-        icon: FileCheck,
-        title: "Mulai Mengelola Arsip",
-        description: "Staf yang ditunjuk dapat langsung mengisi dan mengelola data arsip sesuai dengan struktur yang telah Anda buat."
-    }
 ];
 
 export default function Home() {
@@ -60,214 +48,238 @@ export default function Home() {
   const solutionImage = PlaceHolderImages.find(p => p.id === 'solution-visual');
 
   return (
-    <div className="flex min-h-screen flex-col bg-background font-body text-foreground">
+    <div className="flex min-h-screen flex-col bg-background font-body text-foreground overflow-x-hidden selection:bg-primary/20">
       {/* Header */}
-      <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-14 max-w-screen-2xl items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 font-headline text-lg font-bold">
-            <GanttChartSquare className="h-6 w-6 text-primary" />
-            <span className="font-bold">POLARIX</span>
+      <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-md">
+        <div className="container flex h-16 max-w-screen-xl items-center justify-between px-4 md:px-6">
+          <Link href="/" className="flex items-center gap-2.5 hover:opacity-90 transition-opacity">
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-accent text-white shadow-md">
+              <GanttChartSquare className="h-5 w-5" />
+            </div>
+            <span className="font-headline text-lg font-bold tracking-tight">POLARIX</span>
           </Link>
-          <nav className="flex items-center gap-2">
-            <Button variant="ghost" asChild>
-                <Link href="#fitur">Fitur</Link>
+
+          <div className="flex items-center gap-4">
+            <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-muted-foreground">
+              <Link href="#fitur" className="hover:text-primary transition-colors">Fitur</Link>
+              <Link href="#workflow" className="hover:text-primary transition-colors">Workflow</Link>
+            </nav>
+            <div className="h-6 w-px bg-border/50 hidden md:block"></div>
+            <Button size="sm" asChild className="font-semibold shadow-lg shadow-primary/20 rounded-full px-6">
+              <Link href="/auth/login">Masuk System</Link>
             </Button>
-             <Button variant="ghost" asChild>
-                <Link href="#cara-kerja">Cara Kerja</Link>
-            </Button>
-            <Button asChild>
-                <Link href="/auth/login">Masuk</Link>
-            </Button>
-          </nav>
+          </div>
         </div>
       </header>
 
-      <main className="flex-1">
+      <main className="flex-1 w-full relative">
+        {/* Abstract Backgrounds */}
+        <div className="absolute inset-0 -z-10 overflow-hidden pointer-events-none">
+          <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-primary/5 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/3 opacity-70"></div>
+          <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-accent/5 rounded-full blur-[100px] translate-y-1/3 -translate-x-1/4 opacity-70"></div>
+        </div>
+
         {/* Hero Section */}
-        <section className="w-full py-20 md:py-28">
-          <div className="container grid gap-8 lg:grid-cols-2 lg:gap-16 items-center">
-            <div className="flex flex-col items-start text-left">
-              <h1 className="font-headline text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl md:text-6xl">
-                Arsip Digital Tanpa Batas Struktur
-              </h1>
-              <p className="mt-6 max-w-xl text-lg text-muted-foreground md:text-xl">
-                Bebaskan data Anda dari struktur kaku. Dengan POLARIX, Anda bisa membangun, mengubah, dan mengelola arsip digital secara dinamis—tanpa perlu satu baris kode pun.
-              </p>
-              <div className="mt-10 flex flex-wrap gap-4">
-                <Button size="lg" asChild>
-                  <Link href="/auth/login">Masuk ke Sistem <ArrowRight className="ml-2 h-5 w-5" /></Link>
-                </Button>
-                <Button size="lg" variant="outline" asChild>
-                    <Link href="#fitur">Lihat Fitur</Link>
-                </Button>
+        <section className="relative w-full py-20 lg:py-32">
+          <div className="container px-4 md:px-6 max-w-screen-xl mx-auto">
+            <div className="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
+              {/* Hero Text */}
+              <div className="flex flex-col space-y-6 text-center lg:text-left order-2 lg:order-1">
+                <div className="inline-flex items-center rounded-full border bg-background px-3 py-1 text-sm font-medium text-muted-foreground w-fit mx-auto lg:mx-0 shadow-sm">
+                  <span className="mr-2 flex h-2 w-2 rounded-full bg-primary animate-pulse"></span>
+                  Platform Arsip Digital No-Code
+                </div>
+
+                <h1 className="font-headline text-[2.75rem] leading-[1.1] sm:text-5xl md:text-6xl font-extrabold tracking-tight text-foreground">
+                  Atur Data Arsip <br />
+                  <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">Tanpa Koding</span>
+                </h1>
+
+                <p className="max-w-[42rem] mx-auto lg:mx-0 leading-normal text-muted-foreground sm:text-lg sm:leading-8">
+                  Polarix memberikan kebebasan penuh untuk mendesain, mengelola, dan mengamankan arsip digital organisasi Anda. Struktur dinamis yang mengikuti kebutuhan Anda, bukan sebaliknya.
+                </p>
+
+                <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-4">
+                  <Button size="lg" className="h-12 px-8 rounded-full text-base w-full sm:w-auto shadow-xl shadow-primary/25" asChild>
+                    <Link href="/auth/login">
+                      Mulai Sekarang <ArrowRight className="ml-2 h-4 w-4" />
+                    </Link>
+                  </Button>
+                  <Button size="lg" variant="outline" className="h-12 px-8 rounded-full text-base w-full sm:w-auto bg-background/50 border-primary/20 hover:bg-muted" asChild>
+                    <Link href="#workflow">Pelajari Workflow</Link>
+                  </Button>
+                </div>
+
+                <div className="pt-8 flex items-center justify-center lg:justify-start gap-8 text-sm text-muted-foreground">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-accent" />
+                    <span>Unlimited Tables</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-accent" />
+                    <span>Role-based Access</span>
+                  </div>
+                </div>
               </div>
-            </div>
-            <div className="flex items-center justify-center lg:justify-end">
-              {heroImage && (
-                <Image
-                  src={heroImage.imageUrl}
-                  alt={heroImage.description}
-                  width={600}
-                  height={500}
-                  className="rounded-xl shadow-2xl ring-1 ring-border"
-                  data-ai-hint={heroImage.imageHint}
-                  priority
-                />
-              )}
+
+              {/* Hero Visual */}
+              <div className="relative order-1 lg:order-2 mx-auto lg:mx-0 w-full max-w-[500px] lg:max-w-none">
+                <div className="relative rounded-2xl border bg-card/50 backdrop-blur-sm shadow-2xl overflow-hidden aspect-square lg:aspect-[4/3] group">
+                  <div className="absolute top-0 w-full h-full bg-gradient-to-br from-primary/5 via-transparent to-accent/5 z-10 pointer-events-none"></div>
+
+                  {/* Decorative UI Elements */}
+                  <div className="absolute top-4 left-4 right-4 h-8 bg-muted/40 rounded-lg flex items-center px-3 gap-2 z-20 border border-white/5">
+                    <div className="h-2.5 w-2.5 rounded-full bg-red-400/80"></div>
+                    <div className="h-2.5 w-2.5 rounded-full bg-amber-400/80"></div>
+                    <div className="h-2.5 w-2.5 rounded-full bg-emerald-400/80"></div>
+                  </div>
+
+                  {heroImage ? (
+                    <Image
+                      src={heroImage.imageUrl}
+                      alt="Platform Preview"
+                      fill
+                      className="object-cover mt-8 scale-100 group-hover:scale-105 transition-transform duration-700 ease-out"
+                      priority
+                      sizes="(max-w-768px) 100vw, 50vw"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-muted-foreground bg-muted/20">
+                      Feature Visualization
+                    </div>
+                  )}
+                </div>
+                {/* Floating Badge */}
+                <div className="absolute -bottom-6 -left-6 z-30 bg-card border shadow-xl p-4 rounded-xl hidden md:flex items-center gap-3 animate-bounce-slow">
+                  <div className="h-10 w-10 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-green-600 dark:text-green-400">
+                    <ShieldCheck className="h-6 w-6" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground font-semibold uppercase">Status Keamanan</p>
+                    <p className="font-bold text-sm">Data Terproteksi</p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </section>
-        
-        {/* Problem -> Solution Section */}
-        <section className="w-full py-20 lg:py-28 bg-muted">
-            <div className="container mx-auto grid md:grid-cols-2 gap-12 items-center">
-                <div className="space-y-4">
-                    <h2 className="font-headline text-3xl font-bold tracking-tight">Terjebak Aturan Sistem yang Kaku?</h2>
-                    <p className="text-muted-foreground text-lg">
-                        Sistem arsip konvensional seringkali memaksa Anda mengikuti struktur data yang sudah mati. Butuh kolom baru? Perlu mengubah format? Anda harus menunggu tim IT, memperlambat alur kerja, dan menghambat inovasi. Data Anda seolah terpenjara.
-                    </p>
-                    <div className="mt-6 rounded-lg border bg-card p-8 shadow-sm">
-                         <h2 className="font-headline text-3xl font-bold tracking-tight text-primary">Solusi POLARIX: Kebebasan Terstruktur</h2>
-                         <p className="text-muted-foreground text-lg">
-                            Kami memberikan kontrol kembali ke tangan Anda. POLARIX memungkinkan Anda, sang pemilik data, untuk mendefinisikan sendiri struktur arsip secara visual. Fleksibel, cepat, dan tetap aman terkendali dengan manajemen hak akses yang detail.
-                        </p>
-                    </div>
-                </div>
-                 <div className="flex items-center justify-center">
-                    {solutionImage && (
-                        <Image
-                            src={solutionImage.imageUrl}
-                            alt={solutionImage.description}
-                            width={600}
-                            height={400}
-                            className="rounded-xl shadow-2xl ring-1 ring-border"
-                            data-ai-hint={solutionImage.imageHint}
-                        />
-                    )}
-                </div>
+
+        {/* Feature Grid - Bento Style */}
+        <section id="fitur" className="w-full py-20 bg-muted/20 border-y border-border/50">
+          <div className="container px-4 md:px-6 max-w-screen-xl mx-auto">
+            <div className="text-center max-w-2xl mx-auto mb-16">
+              <h2 className="font-headline text-3xl font-bold tracking-tight sm:text-4xl">Platform Pintar untuk Data Anda</h2>
+              <p className="mt-4 text-muted-foreground">
+                Kami menyediakan tools esensial agar Anda bisa fokus pada pengelolaan isi arsip, bukan teknis sistemnya.
+              </p>
             </div>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {features.map((feature, i) => (
+                <Card key={i} className="bg-card border shadow-sm hover:shadow-md transition-all hover:-translate-y-1">
+                  <CardContent className="p-6">
+                    <div className="h-12 w-12 rounded-lg bg-primary/5 text-primary flex items-center justify-center mb-4">
+                      {feature.icon}
+                    </div>
+                    <h3 className="font-headline font-bold text-lg mb-2">{feature.title}</h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      {feature.description}
+                    </p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
         </section>
 
-        {/* Feature Highlight */}
-        <section id="fitur" className="w-full bg-background py-20 lg:py-28">
-            <div className="container mx-auto">
-                 <div className="text-center mb-12">
-                    <h2 className="font-headline text-3xl font-bold tracking-tight sm:text-4xl">Didesain untuk Fleksibilitas Total</h2>
-                    <p className="mt-4 max-w-2xl mx-auto text-lg text-muted-foreground">
-                        POLARIX bukan sekadar tempat menyimpan data, tapi sebuah platform untuk membentuknya.
-                    </p>
+        {/* Workflow Section - ZigZag */}
+        <section id="workflow" className="w-full py-24 overflow-hidden">
+          <div className="container px-4 md:px-6 max-w-screen-xl mx-auto space-y-24">
+
+            {/* Step 1 */}
+            <div className="grid md:grid-cols-2 gap-12 items-center">
+              <div className="order-2 md:order-1 relative">
+                <div className="aspect-video rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/10 flex items-center justify-center relative overflow-hidden group">
+                  <LayoutDashboard className="h-24 w-24 text-primary/40 group-hover:scale-110 transition-transform duration-500" />
+                  {/* Abstract UI Representation */}
+                  <div className="absolute inset-x-8 bottom-0 h-1/2 bg-background rounded-t-xl border-x border-t shadow-lg opacity-80 translate-y-4 group-hover:translate-y-2 transition-transform"></div>
                 </div>
-              <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
-                {featureCards.map((feature, index) => (
-                  <Card key={index} className="flex flex-col items-center text-center border-transparent shadow-none">
-                    <CardHeader>
-                      <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-primary/10">
-                        {feature.icon}
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <CardTitle className="mb-2 font-headline text-xl">{feature.title}</CardTitle>
-                      <p className="text-muted-foreground">{feature.description}</p>
-                    </CardContent>
-                  </Card>
-                ))}
+              </div>
+              <div className="order-1 md:order-2 space-y-6">
+                <div className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary font-bold">1</div>
+                <h3 className="font-headline text-3xl font-bold">Buat Tabel Tanpa Batas</h3>
+                <p className="text-lg text-muted-foreground leading-relaxed">
+                  Mulai dengan kanvas kosong. Berikan nama, deskripsi, dan kategori. Kumpulkan arsip Surat, Dokumen Proyek, atau Data Karyawan dalam wadah terpisah yang rapi.
+                </p>
               </div>
             </div>
-        </section>
-        
-        {/* How It Works */}
-        <section id="cara-kerja" className="w-full bg-muted py-20 lg:py-28">
-            <div className="container mx-auto">
-                <div className="text-center mb-12">
-                    <h2 className="font-headline text-3xl font-bold tracking-tight sm:text-4xl">Mulai dalam Hitungan Menit</h2>
-                    <p className="mt-4 max-w-2xl mx-auto text-lg text-muted-foreground">
-                       Dari ide menjadi arsip fungsional hanya dalam 4 langkah sederhana.
-                    </p>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                     {howItWorksSteps.map((step) => (
-                        <div key={step.step} className="flex flex-col items-center text-center p-6">
-                             <div className="flex items-center mb-4">
-                                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-primary">
-                                    <step.icon className="h-8 w-8" />
-                                </div>
-                            </div>
-                            <h3 className="mb-2 font-headline text-xl font-semibold">{step.title}</h3>
-                            <p className="text-muted-foreground">{step.description}</p>
-                        </div>
-                     ))}
-                </div>
-            </div>
-        </section>
 
-        {/* Role Explanation */}
-        <section className="w-full py-20 lg:py-28">
-            <div className="container mx-auto">
-                <div className="text-center mb-12">
-                    <h2 className="font-headline text-3xl font-bold tracking-tight sm:text-4xl">Alat yang Tepat untuk Setiap Peran</h2>
-                    <p className="mt-4 max-w-2xl mx-auto text-lg text-muted-foreground">
-                        POLARIX memberdayakan administrator dan memudahkan staf dalam satu platform terpadu.
-                    </p>
+            {/* Step 2 */}
+            <div className="grid md:grid-cols-2 gap-12 items-center">
+              <div className="order-1 space-y-6 md:text-right">
+                <div className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-accent/10 text-accent font-bold md:ml-auto">2</div>
+                <h3 className="font-headline text-3xl font-bold">Desain Struktur Data</h3>
+                <p className="text-lg text-muted-foreground leading-relaxed">
+                  Tentukan kolom apa saja yang Anda butuhkan. Drag & drop kolom Teks, Tanggal, Angka, atau File Upload. Ubah struktur kapanpun kebutuhan bisnis berkembang.
+                </p>
+              </div>
+              <div className="order-2 relative">
+                <div className="aspect-video rounded-2xl bg-gradient-to-bl from-accent/10 to-accent/5 border border-accent/10 flex items-center justify-center relative overflow-hidden group">
+                  <MousePointerClick className="h-24 w-24 text-accent/40 group-hover:scale-110 transition-transform duration-500" />
+                  {/* Abstract UI Representation */}
+                  <div className="absolute inset-y-4 left-0 w-1/2 bg-background rounded-r-xl border-y border-r shadow-lg opacity-60 -translate-x-4 group-hover:translate-x-0 transition-transform"></div>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                     <Card className="bg-card p-8 shadow-sm">
-                         <h3 className="font-headline text-2xl font-bold mb-4 flex items-center gap-3"><Users className="h-8 w-8 text-primary"/>Untuk Administrator</h3>
-                         <p className="text-muted-foreground mb-4">
-                             Anda adalah arsiteknya. Dapatkan kontrol penuh untuk membuat tabel, mendesain struktur, mengelola pengguna, dan mengatur siapa-bisa-apa dengan presisi.
-                         </p>
-                         <ul className="space-y-2 text-muted-foreground">
-                            <li className="flex items-start gap-2"><DatabaseZap className="h-5 w-5 text-primary mt-1 flex-shrink-0"/><span>Desain dan modifikasi struktur tabel secara live.</span></li>
-                            <li className="flex items-start gap-2"><ShieldCheck className="h-5 w-5 text-primary mt-1 flex-shrink-0"/><span>Atur hak akses view, create, edit, delete per user per tabel.</span></li>
-                            <li className="flex items-start gap-2"><UserCheck className="h-5 w-5 text-primary mt-1 flex-shrink-0"/><span>Delegasikan pengelolaan tabel kepada Penanggung Jawab (PIC).</span></li>
-                         </ul>
-                     </Card>
-                     <Card className="bg-card p-8 shadow-sm">
-                         <h3 className="font-headline text-2xl font-bold mb-4 flex items-center gap-3"><GanttChartSquare className="h-8 w-8 text-primary"/>Untuk Staf & PIC</h3>
-                         <p className="text-muted-foreground mb-4">
-                            Fokus pada tugas utama Anda: mengelola dan mengarsipkan data. Isi dan perbarui catatan pada tabel yang menjadi tanggung jawab Anda dengan antarmuka yang sederhana dan efisien.
-                         </p>
-                         <ul className="space-y-2 text-muted-foreground">
-                            <li className="flex items-start gap-2"><ArrowRight className="h-5 w-5 text-primary mt-1 flex-shrink-0"/><span>Akses terfokus hanya pada tabel yang relevan untuk Anda.</span></li>
-                            <li className="flex items-start gap-2"><Zap className="h-5 w-5 text-primary mt-1 flex-shrink-0"/><span>Input, update, dan cari data dengan cepat tanpa distraksi.</span></li>
-                            <li className="flex items-start gap-2"><Lock className="h-5 w-5 text-primary mt-1 flex-shrink-0"/><span>Bekerja dengan aman sesuai hak akses yang telah ditetapkan oleh admin.</span></li>
-                         </ul>
-                     </Card>
-                </div>
+              </div>
             </div>
-        </section>
 
+            {/* Step 3 */}
+            <div className="grid md:grid-cols-2 gap-12 items-center">
+              <div className="order-2 md:order-1 relative">
+                <div className="aspect-video rounded-2xl bg-gradient-to-tr from-purple-500/10 to-purple-500/5 border border-purple-500/10 flex items-center justify-center relative overflow-hidden group">
+                  <UserCheck className="h-24 w-24 text-purple-500/40 group-hover:scale-110 transition-transform duration-500" />
+                  {/* Abstract UI Representation */}
+                  <div className="absolute inset-4 bg-background rounded-xl border shadow-sm flex items-center justify-center opacity-80">
+                    <div className="h-2 w-24 bg-purple-200 rounded-full"></div>
+                  </div>
+                </div>
+              </div>
+              <div className="order-1 md:order-2 space-y-6">
+                <div className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-purple-100 text-purple-600 font-bold dark:bg-purple-900/30 dark:text-purple-400">3</div>
+                <h3 className="font-headline text-3xl font-bold">Kontrol & Delegasi</h3>
+                <p className="text-lg text-muted-foreground leading-relaxed">
+                  Tunjuk PIC (Person In Charge) untuk setiap tabel. Admin memegang kendali penuh, staf fokus bekerja, dan data tetap aman dengan batasan akses yang jelas.
+                </p>
+              </div>
+            </div>
+
+          </div>
+        </section>
 
         {/* Call to Action */}
-        <section className="w-full bg-primary text-primary-foreground py-20">
-          <div className="container text-center">
-            <h2 className="font-headline text-3xl font-bold tracking-tight sm:text-4xl">Wujudkan Sistem Arsip Ideal Anda</h2>
-            <p className="mx-auto mt-4 max-w-xl text-lg text-primary-foreground/80">
-                Berhenti berkompromi dengan sistem yang kaku. Mulai bangun fondasi data yang fleksibel bersama POLARIX.
+        <section className="w-full py-24 bg-primary text-primary-foreground relative overflow-hidden">
+          <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-10"></div>
+          <div className="container px-4 md:px-6 max-w-screen-xl mx-auto text-center relative z-10">
+            <h2 className="font-headline text-3xl font-bold tracking-tight sm:text-4xl mb-6">Siap Merapikan Arsip Anda?</h2>
+            <p className="max-w-2xl mx-auto text-primary-foreground/80 text-lg mb-10">
+              Bergabunglah sekarang dan rasakan kemudahan mengelola ribuan data tanpa sakit kepala teknis.
             </p>
-            <div className="mt-8">
-              <Button size="lg" variant="secondary" asChild>
-                <Link href="/auth/login">Masuk dan Mulai Sekarang</Link>
-              </Button>
-            </div>
+            <Button size="lg" variant="secondary" className="h-12 px-10 text-lg rounded-full shadow-2xl hover:scale-105 transition-transform" asChild>
+              <Link href="/auth/login">Masuk ke Dashboard</Link>
+            </Button>
           </div>
         </section>
       </main>
 
       {/* Footer */}
-      <footer className="w-full border-t border-border/40 bg-background">
-        <div className="container flex flex-col items-center justify-between gap-4 py-10 md:h-24 md:flex-row md:py-0">
-          <div className="flex flex-col items-center gap-4 px-8 md:flex-row md:gap-2 md:px-0">
-             <Link href="/" className="flex items-center gap-2 font-headline text-lg">
-                <GanttChartSquare className="h-6 w-6 text-primary" />
-                <span className="font-bold">POLARIX</span>
-            </Link>
-            <p className="text-center text-sm leading-loose text-muted-foreground md:text-left">
-              Arsip Digital Tanpa Batas Struktur.
-            </p>
+      <footer className="w-full border-t border-border/50 bg-background py-12">
+        <div className="container px-4 md:px-6 max-w-screen-xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="flex items-center gap-2">
+            <GanttChartSquare className="h-6 w-6 text-primary" />
+            <span className="font-bold text-lg font-headline">POLARIX</span>
           </div>
-           <p className="text-center text-sm text-muted-foreground md:text-left">
-              © {new Date().getFullYear()} POLARIX. Didesain dan dikembangkan di Firebase Studio.
-            </p>
+          <p className="text-sm text-muted-foreground text-center md:text-right">
+            © {new Date().getFullYear()} Polarix System. Built for Flexibility.
+          </p>
         </div>
       </footer>
     </div>

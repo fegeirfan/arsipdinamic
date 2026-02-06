@@ -64,6 +64,7 @@ export default async function MyArchivesPage() {
         .order('name');
 
     if (error) {
+        // eslint-disable-next-line no-console
         console.error('Error fetching tables:', error);
     }
 

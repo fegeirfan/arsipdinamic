@@ -1,10 +1,10 @@
 import type { Metadata } from 'next';
 import { Inter, Lexend_Deca as Lexend } from 'next/font/google';
 import './globals.css';
-import { Toaster } from '@/components/ui/toaster';
+import { Toaster } from 'sonner';
 import { cn } from '@/lib/utils';
 
-const inter = Inter({ 
+const inter = Inter({
   subsets: ['latin'],
   variable: '--font-sans',
 });
@@ -29,7 +29,7 @@ export default function RootLayout({
       <head />
       <body className={cn("min-h-screen bg-background font-body antialiased", inter.variable, lexend.variable)}>
         {children}
-        <Toaster />
+        <Toaster position="top-right" richColors />
       </body>
     </html>
   );

@@ -7,6 +7,7 @@ import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { createRecord } from '../actions';
+import { DriveInput } from './drive-input';
 
 export default async function CreateRecordPage(props: {
     params: Promise<{ tableId: string }>;
@@ -18,7 +19,8 @@ export default async function CreateRecordPage(props: {
     if (!user) redirect('/auth/login');
 
     const { data: table } = await supabase.from('archive_tables').select('*').eq('id', tableId).single();
-    const { data: columns } = await supabase.from('archive_columns').select('*').eq('table_id', tableId).order('order_index');
+    // Default sorting fallback if order_index is missing
+    const { data: columns } = await supabase.from('archive_columns').select('*').eq('table_id', tableId).order('created_at', { ascending: true });
 
     if (!table) return <div>Table not found.</div>;
 
@@ -43,18 +45,34 @@ export default async function CreateRecordPage(props: {
                 <CardContent>
                     <form className="space-y-6" action={createRecordWithId}>
                         <div className="grid gap-4">
-                            {columns?.map((col) => (
-                                <div key={col.id} className="grid gap-2">
-                                    <Label htmlFor={col.id} className="font-semibold">{col.name} {col.is_required && <span className="text-destructive">*</span>}</Label>
-                                    <Input
-                                        id={col.id}
-                                        name={col.name}
-                                        type={col.type === 'number' ? 'number' : col.type === 'date' ? 'date' : 'text'}
-                                        required={col.is_required}
-                                        className="border-sidebar-accent/10 focus:border-sidebar-accent"
-                                    />
-                                </div>
-                            ))}
+                            {columns?.map((col) => {
+                                let options = [];
+                                try {
+                                    options = typeof col.options === 'string' ? JSON.parse(col.options) : col.options || [];
+                                } catch (e) { options = [] }
+
+                                return (
+                                    <div key={col.id} className="grid gap-2">
+                                        <Label htmlFor={col.id} className="font-semibold">{col.name} {col.is_required && <span className="text-destructive">*</span>}</Label>
+
+                                        {col.type === 'drive' ? (
+                                            <DriveInput
+                                                name={col.name}
+                                                scriptUrl={options[0]}
+                                                required={col.is_required}
+                                            />
+                                        ) : (
+                                            <Input
+                                                id={col.id}
+                                                name={col.name}
+                                                type={col.type === 'number' ? 'number' : col.type === 'date' ? 'date' : 'text'}
+                                                required={col.is_required}
+                                                className="border-sidebar-accent/10 focus:border-sidebar-accent"
+                                            />
+                                        )}
+                                    </div>
+                                )
+                            })}
                         </div>
                         <div className="pt-4 flex justify-end gap-3">
                             <Button variant="outline" asChild className="border-sidebar-accent/20">

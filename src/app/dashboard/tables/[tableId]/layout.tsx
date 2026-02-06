@@ -1,4 +1,6 @@
 'use client';
+
+import { use } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ArrowLeft, Database, Settings2, Users } from 'lucide-react';
@@ -11,24 +13,25 @@ export default function TableDetailLayout({
   params,
 }: {
   children: React.ReactNode;
-  params: { tableId: string };
+  params: Promise<{ tableId: string }>;
 }) {
+  const { tableId } = use(params);
   const pathname = usePathname();
-  const table = archiveTables.find((t) => t.id === params.tableId);
+  const table = archiveTables.find((t) => t.id === tableId);
 
   const navItems = [
     {
-      href: `/dashboard/tables/${params.tableId}`,
+      href: `/dashboard/tables/${tableId}`,
       label: 'Data',
       icon: Database,
     },
     {
-      href: `/dashboard/tables/${params.tableId}/builder`,
+      href: `/dashboard/tables/${tableId}/builder`,
       label: 'Builder',
       icon: Settings2,
     },
     {
-      href: `/dashboard/tables/${params.tableId}/permissions`,
+      href: `/dashboard/tables/${tableId}/permissions`,
       label: 'Permissions',
       icon: Users,
     },
@@ -52,19 +55,19 @@ export default function TableDetailLayout({
       </div>
       <nav className="border-b">
         <div className="flex items-center gap-x-4">
-        {navItems.map((item) => (
-          <Link
-            key={item.href}
-            href={item.href}
-            className={cn(
-              'flex items-center gap-2 px-1 pb-3 text-sm font-medium text-muted-foreground transition-colors hover:text-primary',
-              pathname === item.href && 'text-primary border-b-2 border-primary'
-            )}
-          >
-            <item.icon className="h-4 w-4" />
-            {item.label}
-          </Link>
-        ))}
+          {navItems.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={cn(
+                'flex items-center gap-2 px-1 pb-3 text-sm font-medium text-muted-foreground transition-colors hover:text-primary',
+                pathname === item.href && 'text-primary border-b-2 border-primary'
+              )}
+            >
+              <item.icon className="h-4 w-4" />
+              {item.label}
+            </Link>
+          ))}
         </div>
       </nav>
       <div>{children}</div>
