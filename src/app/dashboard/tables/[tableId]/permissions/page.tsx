@@ -1,128 +1,99 @@
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  CardFooter,
-} from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/checkbox';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import {
-  archiveTables,
-  users,
-  tablePermissions as allPermissions,
-} from '@/lib/data';
-import { User, UserRole } from '@/lib/types';
-import { PlusCircle } from 'lucide-react';
+import { createClient } from '@/utils/supabase/server'
+import { redirect } from 'next/navigation'
+import { PermissionsClient } from './permissions-client'
 
-export default function TablePermissionsPage({
-  params,
-}: {
-  params: { tableId: string };
+export default async function TablePermissionsPage(props: {
+  params: Promise<{ tableId: string }>
 }) {
-  const table = archiveTables.find((t) => t.id === params.tableId);
-  if (!table) return <div>Table not found</div>;
+  const { tableId } = await props.params
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) redirect('/auth/login')
 
-  const tablePics = table.picIds;
-  const tablePerms = allPermissions.filter((p) => p.tableId === table.id);
+  const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
+  const { data: table } = await supabase
+    .from('archive_tables')
+    .select('id, name, team_id, team_pic_id, created_by')
+    .eq('id', tableId)
+    .single()
 
-  // Combine PICs and users with explicit permissions, avoiding duplicates
-  const userIdsWithAccess = [
-    ...new Set([...tablePics, ...tablePerms.map((p) => p.userId)]),
-  ];
-  const relevantUsers = users.filter((u) => userIdsWithAccess.includes(u.id) || u.role === 'admin');
+  if (!table) return <div>Tabel tidak ditemukan.</div>
 
-  const getPermissions = (userId: string, role: UserRole) => {
-    if (role === 'admin') {
-      return { isPic: true, canView: true, canInsert: true, canEdit: true, canDelete: true, canEditStructure: true, disabled: true };
-    }
-    const isPic = tablePics.includes(userId);
-    if (isPic) {
-      return { isPic: true, canView: true, canInsert: true, canEdit: true, canDelete: true, canEditStructure: true, disabled: false };
-    }
-    const explicitPerms = tablePerms.find((p) => p.userId === userId);
+  const { data: team } = table.team_id
+    ? await supabase.from('teams').select('pic_id').eq('id', table.team_id).single()
+    : { data: null }
+
+  const isAdmin = profile?.role === 'admin'
+  const isPic =
+    table.team_pic_id === user.id ||
+    table.created_by === user.id ||
+    team?.pic_id === user.id
+
+  if (!isAdmin && !isPic) redirect('/dashboard/tables')
+
+  const { data: perms } = await supabase
+    .from('table_permissions')
+    .select('*')
+    .eq('table_id', tableId)
+
+  const picUserIds = new Set<string>()
+  if (table.team_pic_id) picUserIds.add(table.team_pic_id)
+  if (table.created_by) picUserIds.add(table.created_by)
+  if (team?.pic_id) picUserIds.add(team.pic_id)
+
+  const userIds = new Set<string>(picUserIds)
+  perms?.forEach((p) => userIds.add(p.user_id))
+
+  // Include all team members and admins so PIC can assign permissions
+  const { data: teamProfiles } = table.team_id
+    ? await supabase
+        .from('profiles')
+        .select('id, full_name, email, role, avatar_url')
+        .eq('team_id', table.team_id)
+    : { data: [] }
+  const { data: adminProfiles } = await supabase
+    .from('profiles')
+    .select('id, full_name, email, role, avatar_url')
+    .eq('role', 'admin')
+
+  const allProfiles = new Map<string, { id: string; full_name: string | null; email: string | null; role: string; avatar_url: string | null }>()
+  teamProfiles?.forEach((p) => allProfiles.set(p.id, p))
+  adminProfiles?.forEach((p) => allProfiles.set(p.id, p))
+  const permUserIds = perms?.map((p) => p.user_id).filter((id) => !allProfiles.has(id)) ?? []
+  if (permUserIds.length > 0) {
+    const { data: extra } = await supabase
+      .from('profiles')
+      .select('id, full_name, email, role, avatar_url')
+      .in('id', permUserIds)
+    extra?.forEach((p) => allProfiles.set(p.id, p))
+  }
+  const profilesToShow = Array.from(allProfiles.values())
+
+  const initialPermissions = profilesToShow.map((p) => {
+    const isPicUser = picUserIds.has(p.id)
+    const explicit = perms?.find((perm) => perm.user_id === p.id)
     return {
-      isPic: false,
-      canView: !!explicitPerms?.canView,
-      canInsert: !!explicitPerms?.canInsert,
-      canEdit: !!explicitPerms?.canEdit,
-      canDelete: !!explicitPerms?.canDelete,
-      canEditStructure: !!explicitPerms?.canEditStructure,
-      disabled: false,
-    };
-  };
-
-  const permissionLabels = ['PIC', 'View', 'Insert', 'Edit', 'Delete', 'Structure'];
-  type PermissionKey = 'isPic' | 'canView' | 'canInsert' | 'canEdit' | 'canDelete' | 'canEditStructure';
-
+      userId: p.id,
+      fullName: p.full_name ?? p.email ?? p.id,
+      email: p.email,
+      role: p.role,
+      avatarUrl: p.avatar_url ?? null,
+      isPic: isPicUser || p.role === 'admin',
+      canView: p.role === 'admin' ? true : (explicit?.can_view ?? isPicUser),
+      canInsert: p.role === 'admin' ? true : (explicit?.can_insert ?? isPicUser),
+      canEdit: p.role === 'admin' ? true : (explicit?.can_edit ?? isPicUser),
+      canDelete: p.role === 'admin' ? true : (explicit?.can_delete ?? isPicUser),
+      canEditStructure: p.role === 'admin' ? true : (explicit?.can_edit_structure ?? isPicUser),
+      disabled: p.role === 'admin',
+    }
+  })
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-            <div>
-                <CardTitle>Table Permissions</CardTitle>
-                <CardDescription>
-                Manage who can access and modify this table. Admins have full access by default.
-                </CardDescription>
-            </div>
-            <Button variant="outline"><PlusCircle className="mr-2 h-4 w-4" /> Add User</Button>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div className="overflow-x-auto">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>User</TableHead>
-              {permissionLabels.map((label) => (
-                <TableHead key={label} className="text-center">{label}</TableHead>
-              ))}
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {relevantUsers.map((user) => {
-              const perms = getPermissions(user.id, user.role);
-              return (
-                <TableRow key={user.id}>
-                  <TableCell>
-                    <div className="flex items-center gap-3">
-                      <Avatar className="h-8 w-8">
-                        <AvatarImage src={user.avatarUrl} alt={user.name} data-ai-hint="person portrait" />
-                        <AvatarFallback>{user.name.substring(0, 2).toUpperCase()}</AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <div className="font-medium">{user.name}</div>
-                        <div className="text-xs text-muted-foreground">{user.role}</div>
-                      </div>
-                    </div>
-                  </TableCell>
-                  {Object.keys(perms).filter(key => key !== 'disabled').map((key) => (
-                    <TableCell key={key} className="text-center">
-                        <Checkbox defaultChecked={perms[key as PermissionKey]} disabled={perms.disabled} />
-                    </TableCell>
-                  ))}
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
-        </div>
-      </CardContent>
-       <CardFooter className="border-t px-6 py-4">
-        <div className="flex-1" />
-        <Button>Save Permissions</Button>
-      </CardFooter>
-    </Card>
-  );
+    <PermissionsClient
+      tableId={tableId}
+      tableName={table.name}
+      initialPermissions={initialPermissions}
+      canEditStructure={isAdmin || isPic}
+    />
+  )
 }

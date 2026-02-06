@@ -18,14 +18,27 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { createArchiveTable } from '../actions-table'
+import { redirect } from 'next/navigation'
+import Link from 'next/link'
+import { getPicTeamIds } from '@/lib/auth-pic'
 
 export default async function CreateTablePage() {
   const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) redirect('/auth/login')
 
-  // Fetch teams
-  const { data: teams } = await supabase.from('teams').select('id, name')
+  const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
+  const isAdmin = profile?.role === 'admin'
+  const picTeamIds = await getPicTeamIds()
+  const isPic = picTeamIds.length > 0
+  if (!isAdmin && !isPic) redirect('/dashboard/my-team')
 
-  // Fetch users for PIC selection
+  // Admin: semua tim. PIC: hanya tim yang dipimpinnya.
+  const { data: allTeams } = await supabase.from('teams').select('id, name')
+  const teams = isAdmin ? allTeams ?? [] : (allTeams ?? []).filter((t) => picTeamIds.includes(t.id))
+  if (!isAdmin && teams.length === 0) redirect('/dashboard/tables')
+
+  // Fetch users for PIC selection (admin bisa pilih siapa saja; PIC default diri sendiri)
   const { data: users } = await supabase.from('profiles').select('id, full_name, email')
 
   return (
@@ -83,14 +96,14 @@ export default async function CreateTablePage() {
                       <SelectValue placeholder="Pilih PIC" />
                     </SelectTrigger>
                     <SelectContent>
-                      {users?.map((user) => (
-                        <SelectItem key={user.id} value={user.id}>
-                          {user.full_name || user.email}
+                      {users?.map((u) => (
+                        <SelectItem key={u.id} value={u.id}>
+                          {u.full_name || u.email}
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
-                  <p className="text-[10px] text-muted-foreground">PIC bertanggung jawab atas pengelolaan struktur & data tabel.</p>
+                  <p className="text-[10px] text-muted-foreground">PIC bertanggung jawab atas pengelolaan struktur & data tabel. {isPic && !isAdmin && 'Anda sebagai PIC tim otomatis menjadi PIC tabel.'}</p>
                 </div>
               </div>
             </div>

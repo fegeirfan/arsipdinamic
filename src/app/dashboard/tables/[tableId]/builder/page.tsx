@@ -28,12 +28,21 @@ import {
 import { archiveColumns, archiveTables } from '@/lib/data';
 import { Trash2, PlusCircle } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
+import { createClient } from '@/utils/supabase/server';
+import { redirect } from 'next/navigation';
+import { isTablePic } from '@/lib/auth-pic';
 
-export default function TableBuilderPage({
-  params,
-}: {
-  params: { tableId: string };
+export default async function TableBuilderPage(props: {
+  params: Promise<{ tableId: string }>;
 }) {
+  const params = await props.params;
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) redirect('/auth/login');
+
+  const allowed = await isTablePic(params.tableId);
+  if (!allowed) redirect('/dashboard/tables');
+
   const table = archiveTables.find((t) => t.id === params.tableId);
   const columns = archiveColumns.filter((c) => c.tableId === params.tableId);
 

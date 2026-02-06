@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link';
-import { GanttChartSquare, Home, Table, Users, Settings, Download, Star, Clock, User as UserIcon } from 'lucide-react';
+import { GanttChartSquare, Home, Table, Users, Settings, Download, Star, Clock, User as UserIcon, LayoutGrid } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 
@@ -23,9 +23,19 @@ const userNavItems = [
   { href: '/dashboard/profile', icon: UserIcon, label: 'Profil' },
 ];
 
-export function AppSidebarNav({ isMobile = false, role }: { isMobile?: boolean; role: string }) {
+const userNavItemsWithPicTables = [
+  { href: '/dashboard', icon: Home, label: 'Dashboard' },
+  { href: '/dashboard/my-archives', icon: LayoutGrid, label: 'Arsip Saya' },
+  { href: '/dashboard/my-team', icon: Table, label: 'Arsip Tim Saya' },
+  { href: '/dashboard/browse', icon: Star, label: 'Jelajahi Tabel' },
+  { href: '/dashboard/favorites', icon: Star, label: 'Favorit' },
+  { href: '/dashboard/activity', icon: Clock, label: 'Aktivitas Saya' },
+  { href: '/dashboard/profile', icon: UserIcon, label: 'Profil' },
+];
+
+export function AppSidebarNav({ isMobile = false, role, isPic = false }: { isMobile?: boolean; role: string; isPic?: boolean }) {
   const pathname = usePathname();
-  const navItems = role === 'admin' ? adminNavItems : userNavItems;
+  const navItems = role === 'admin' ? adminNavItems : (isPic ? userNavItemsWithPicTables : userNavItems);
 
   return (
     <nav className={cn("grid items-start px-2 text-sm font-medium lg:px-4", isMobile && "gap-6 text-lg")}>

@@ -9,12 +9,22 @@ export async function processAccessRequest(requestId: string, status: 'approved'
 
     if (!user) throw new Error('Unauthorized')
 
+    const { data: request } = await supabase
+        .from('access_requests')
+        .select('user_id, table_id, requested_level')
+        .eq('id', requestId)
+        .single()
+
+    if (!request) {
+        return { error: 'Permintaan tidak ditemukan.' }
+    }
+
     const { error } = await supabase
         .from('access_requests')
         .update({
             status,
             processed_by: user.id,
-            updated_at: new foreign_now() // Just an indicator, DB has default
+            updated_at: new Date().toISOString(),
         })
         .eq('id', requestId)
 
@@ -23,13 +33,44 @@ export async function processAccessRequest(requestId: string, status: 'approved'
         return { error: error.message }
     }
 
-    // If approved, we might need to update public.table_permissions or similar
-    // For now, let's assume the RLS handles it or we'll implement a permission sync
+    if (status === 'approved') {
+        const canView = true
+        const canInsert = request.requested_level === 'insert'
+        const { data: existing } = await supabase
+            .from('table_permissions')
+            .select('id')
+            .eq('table_id', request.table_id)
+            .eq('user_id', request.user_id)
+            .single()
+        if (existing) {
+            const { error: permError } = await supabase
+                .from('table_permissions')
+                .update({
+                    can_view: canView,
+                    can_insert: canInsert,
+                })
+                .eq('id', existing.id)
+            if (permError) {
+                console.error('Error syncing table_permissions:', permError)
+                return { error: 'Akses disetujui tetapi izin gagal disinkronkan.' }
+            }
+        } else {
+            const { error: permError } = await supabase.from('table_permissions').insert({
+                table_id: request.table_id,
+                user_id: request.user_id,
+                can_view: canView,
+                can_insert: canInsert,
+                can_edit: false,
+                can_delete: false,
+                can_edit_structure: false,
+            })
+            if (permError) {
+                console.error('Error syncing table_permissions:', permError)
+                return { error: 'Akses disetujui tetapi izin gagal disinkronkan.' }
+            }
+        }
+    }
 
     revalidatePath('/dashboard/access')
     return { success: true }
-}
-
-function foreign_now() {
-    return new Date().toISOString()
 }

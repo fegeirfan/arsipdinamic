@@ -29,6 +29,7 @@ import { format } from 'date-fns';
 import Link from 'next/link';
 import { createClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
+import { RecordRowActions } from './record-row-actions';
 
 export default async function TableDataPage(props: {
   params: Promise<{ tableId: string }>;
@@ -43,7 +44,7 @@ export default async function TableDataPage(props: {
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('role')
+    .select('role, team_id')
     .eq('id', user.id)
     .single();
 
@@ -51,9 +52,27 @@ export default async function TableDataPage(props: {
 
   const { data: table } = await supabase
     .from('archive_tables')
-    .select('*')
+    .select('*, team:teams(pic_id)')
     .eq('id', params.tableId)
     .single();
+
+  const { data: myPermission } = await supabase
+    .from('table_permissions')
+    .select('can_view, can_insert, can_edit, can_delete')
+    .eq('table_id', params.tableId)
+    .eq('user_id', user.id)
+    .single();
+
+  const isPic =
+    table?.team_pic_id === user.id ||
+    table?.created_by === user.id ||
+    (table?.team as { pic_id?: string } | null)?.pic_id === user.id;
+  const canInsert =
+    role === 'admin' || isPic || myPermission?.can_insert === true;
+  const canEdit =
+    role === 'admin' || isPic || myPermission?.can_edit === true;
+  const canDelete =
+    role === 'admin' || isPic || myPermission?.can_delete === true;
 
   const { data: columns } = await supabase
     .from('archive_columns')
@@ -131,12 +150,14 @@ export default async function TableDataPage(props: {
                 <File className="h-3.5 w-3.5" />
                 <span className="sr-only sm:not-sr-only">Export PDF</span>
               </Button>
-              <Button size="sm" className="h-8 gap-1" asChild>
-                <Link href={`/dashboard/tables/${params.tableId}/create`}>
-                  <PlusCircle className="h-3.5 w-3.5" />
-                  <span className="sr-only sm:not-sr-only">Tambah Arsip</span>
-                </Link>
-              </Button>
+              {canInsert && (
+                <Button size="sm" className="h-8 gap-1" asChild>
+                  <Link href={`/dashboard/tables/${params.tableId}/create`}>
+                    <PlusCircle className="h-3.5 w-3.5" />
+                    <span className="sr-only sm:not-sr-only">Tambah Arsip</span>
+                  </Link>
+                </Button>
+              )}
             </div>
           </div>
         </CardHeader>
@@ -167,9 +188,12 @@ export default async function TableDataPage(props: {
                       </div>
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button variant="ghost" size="sm">
-                        Detail
-                      </Button>
+                      <RecordRowActions
+                        tableId={params.tableId}
+                        recordId={record.id}
+                        canEdit={canEdit}
+                        canDelete={canDelete}
+                      />
                     </TableCell>
                   </TableRow>
                 ))}

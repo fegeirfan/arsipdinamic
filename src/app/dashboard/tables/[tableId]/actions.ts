@@ -36,3 +36,52 @@ export async function createRecord(tableId: string, formData: FormData) {
     revalidatePath(`/dashboard/tables/${tableId}`)
     redirect(`/dashboard/tables/${tableId}`)
 }
+
+export async function deleteRecord(tableId: string, recordId: string) {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { error: 'Unauthorized' }
+
+    const { error } = await supabase
+        .from('archive_records')
+        .delete()
+        .eq('id', recordId)
+        .eq('table_id', tableId)
+
+    if (error) {
+        console.error('Error deleting record:', error)
+        return { error: error.message }
+    }
+    revalidatePath(`/dashboard/tables/${tableId}`)
+    return { success: true }
+}
+
+export async function updateRecord(tableId: string, recordId: string, formData: FormData) {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) throw new Error('Unauthorized')
+
+    const { data: columns } = await supabase
+        .from('archive_columns')
+        .select('name')
+        .eq('table_id', tableId)
+
+    const recordData: Record<string, unknown> = {}
+    columns?.forEach((col) => {
+        recordData[col.name] = formData.get(col.name)
+    })
+
+    const { error } = await supabase
+        .from('archive_records')
+        .update({ data: recordData })
+        .eq('id', recordId)
+        .eq('table_id', tableId)
+
+    if (error) {
+        console.error('Error updating record:', error)
+        return { error: error.message }
+    }
+    revalidatePath(`/dashboard/tables/${tableId}`)
+    revalidatePath(`/dashboard/tables/${tableId}/record/${recordId}`)
+    redirect(`/dashboard/tables/${tableId}/record/${recordId}`)
+}

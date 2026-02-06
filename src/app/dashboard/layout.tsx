@@ -23,12 +23,14 @@ export default async function DashboardLayout({
     .single();
 
   const role = profile?.role || 'staff';
+  const { data: picTeams } = await supabase.from('teams').select('id').eq('pic_id', user.id);
+  const isPic = (picTeams?.length ?? 0) > 0;
 
   return (
     <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
-      <AppSidebar role={role} />
+      <AppSidebar role={role} isPic={isPic} />
       <div className="flex flex-col">
-        <AppHeader role={role} />
+        <AppHeader role={role} isPic={isPic} />
         <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6 bg-background">
           {children}
         </main>

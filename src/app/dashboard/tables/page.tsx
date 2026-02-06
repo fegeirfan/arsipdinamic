@@ -52,16 +52,20 @@ export default async function TablesPage() {
     .eq('id', user.id)
     .single();
 
-  if (profile?.role !== 'admin') {
-    redirect('/dashboard/my-team');
+  const isAdmin = profile?.role === 'admin';
+  const { data: picTeams } = await supabase.from('teams').select('id').eq('pic_id', user.id);
+  const isPic = (picTeams?.length ?? 0) > 0;
+
+  if (!isAdmin) {
+    redirect('/dashboard/my-archives');
   }
 
-  // Fetch all tables with team and PIC details
+  // Fetch all tables with team and PIC details (RLS: admin lihat semua, PIC lihat tabel yang mereka kelola)
   const { data: tables, error } = await supabase
     .from('archive_tables')
     .select(`
       *,
-      team:teams(id, name),
+      team:teams(id, name, pic_id),
       pic:profiles!archive_tables_team_pic_id_fkey(id, full_name, avatar_url)
     `)
     .order('created_at', { ascending: false });
@@ -93,15 +97,27 @@ export default async function TablesPage() {
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
         {tables?.map((table) => {
+          const teamWithPic = table.team as { id?: string; name?: string; pic_id?: string } | null
+          const isCurrentUserPic =
+            table.team_pic_id === user.id ||
+            table.created_by === user.id ||
+            teamWithPic?.pic_id === user.id
           return (
             <Card key={table.id} className="border-sidebar-accent/10 hover:border-sidebar-accent/30 transition-all">
               <CardHeader className="pb-3">
                 <div className="flex items-start justify-between">
                   <div className="space-y-1">
                     <CardTitle className="text-lg font-bold text-sidebar-accent">{table.name}</CardTitle>
-                    <Badge variant="outline" className="font-normal text-[10px] bg-sidebar-accent/5">
-                      Tim: {table.team?.name || 'TANPA TIM'}
-                    </Badge>
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      <Badge variant="outline" className="font-normal text-[10px] bg-sidebar-accent/5">
+                        Tim: {table.team?.name || 'TANPA TIM'}
+                      </Badge>
+                      {isCurrentUserPic && (
+                        <Badge variant="secondary" className="text-[10px] bg-emerald-500/10 text-emerald-700 border-emerald-500/20">
+                          Anda PIC
+                        </Badge>
+                      )}
+                    </div>
                   </div>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>

@@ -1,11 +1,11 @@
 import Link from 'next/link';
 import { Menu } from 'lucide-react';
 import { UserNav } from './user-nav';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { AppSidebarNav } from './sidebar-nav';
 
-export function AppHeader({ role }: { role: string }) {
+export function AppHeader({ role, isPic = false }: { role: string; isPic?: boolean }) {
   return (
     <header className="flex h-14 items-center gap-4 border-b bg-card px-4 lg:h-[60px] lg:px-6">
       <Sheet>
@@ -16,7 +16,8 @@ export function AppHeader({ role }: { role: string }) {
           </Button>
         </SheetTrigger>
         <SheetContent side="left" className="flex flex-col bg-sidebar text-sidebar-foreground border-sidebar-border p-0">
-          <AppSidebarNav isMobile={true} role={role} />
+          <SheetTitle className="sr-only">Menu navigasi</SheetTitle>
+          <AppSidebarNav isMobile={true} role={role} isPic={isPic} />
         </SheetContent>
       </Sheet>
       <div className="w-full flex-1" />

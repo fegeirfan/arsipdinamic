@@ -28,12 +28,23 @@ export default async function MyTeamArchivesPage() {
         redirect('/auth/login')
     }
 
-    // Fetch user's team ID
+    // Fetch user's team (pakai FK eksplisit agar join terbaca)
     const { data: profile } = await supabase
         .from('profiles')
-        .select('team_id, team:teams(name)')
+        .select('team_id, team:teams!profiles_team_id_fkey(id, name)')
         .eq('id', user.id)
         .single()
+
+    // Fallback: ambil nama tim terpisah jika join kosong (RLS/relasi)
+    let teamName: string | null = profile?.team?.name ?? null
+    if (profile?.team_id && !teamName) {
+        const { data: team } = await supabase
+            .from('teams')
+            .select('name')
+            .eq('id', profile.team_id)
+            .single()
+        teamName = team?.name ?? null
+    }
 
     if (!profile?.team_id) {
         return (
@@ -64,7 +75,7 @@ export default async function MyTeamArchivesPage() {
             <div className="flex items-center justify-between">
                 <div className="flex flex-col">
                     <h1 className="text-lg font-semibold md:text-2xl">Arsip Tim Saya</h1>
-                    <p className="text-sm text-muted-foreground">Unit: {profile.team?.name}</p>
+                    <p className="text-sm text-muted-foreground">Unit: {teamName ?? 'Tim Anda'}</p>
                 </div>
             </div>
 
