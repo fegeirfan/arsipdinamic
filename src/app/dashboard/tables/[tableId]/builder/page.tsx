@@ -20,11 +20,11 @@ export default async function TableBuilderPage(props: {
     .from('archive_columns')
     .select('*')
     .eq('table_id', tableId)
-    .order('created_at', { ascending: true }); // Assuming created_at exists, schema says it doesn't? 
-  // Schema check: id, table_id, name, type, is_required, options. No created_at in initial schema!
-  // id is UUID. Default sort might be random.
-  // Let's sort by name for now or just as is. 
-  // Ideally we should add 'order' column later.
+    .order('name');
+
+  if (error) {
+    console.error('Error fetching columns:', error);
+  }
 
   return (
     <div className="container mx-auto py-6 max-w-5xl">

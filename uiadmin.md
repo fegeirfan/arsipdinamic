@@ -1,294 +1,303 @@
-Siap 👌
-Ini **UI/UX HALAMAN ADMIN** yang **jelas, rapi, dan siap diterjemahkan ke desain (Figma) atau langsung ke Next.js + Tailwind**. Aku susun dari **layout global → halaman → komponen → UX rules**.
+
+
+# 🛠️ UI / UX HALAMAN ADMIN (FINAL – BASED ON APPROVAL FLOW)
+
+**Peran Admin:**
+👉 **Pemilik sistem & penjaga governance**, bukan operator harian arsip.
 
 ---
 
-# 🎨 UI / UX HALAMAN ADMIN
+## 0️⃣ Layout Global Admin
 
-**Sistem Manajemen Arsip (Next.js + Supabase)**
-
----
-
-## 1️⃣ Layout Global Admin
-
-### 🧱 Struktur Layout
+### Struktur
 
 ```
-┌──────────────────────────────┐
-│ Topbar                       │
-├──── Sidebar ────┬────────────┤
-│                 │ Main       │
-│                 │ Content    │
-│                 │            │
-└─────────────────┴────────────┘
+Topbar
+├─ Sidebar Admin
+└─ Main Content
 ```
 
----
+### Sidebar Admin (FINAL)
 
-### 📌 Sidebar (Left)
+1. 📊 Dashboard
+2. 🧱 Team & PIC
+3. 📁 Tabel Arsip
+4. 🔐 Akses & Permintaan
+5. 👥 User
+6. 📜 Audit Log
+7. ⚙️ Pengaturan Sistem
 
-**Tetap (sticky), collapsible**
-
-**Menu:**
-
-* 📊 Dashboard
-* 📁 Manajemen Tabel
-* 👥 Manajemen User
-* 🛡️ Permission & PIC
-* 📤 Backup & Export
-* ⚙️ Pengaturan
-
-**UX Notes:**
-
-* Badge **Public / Private**
-* Label kecil **PIC**
-* Active state jelas
+> ❌ Tidak ada menu “Isi Arsip”
+> Admin **tidak bekerja dengan data**, tapi **mengatur sistem**.
 
 ---
 
-### 🔝 Topbar
-
-* Judul halaman
-* Search global arsip
-* Avatar admin (dropdown):
-
-  * Profile
-  * Logout
-
----
-
-## 2️⃣ Halaman Dashboard Admin
+## 1️⃣ Dashboard Admin
 
 ### 🎯 Tujuan
 
-Memberi **overview cepat** kondisi arsip.
+Melihat **kondisi & risiko sistem** dalam 1 layar.
 
-### 🧩 Komponen
+### Komponen
 
-* Card Statistik:
+#### 📊 Statistik Utama
 
-  * Total Tabel
-  * Total Arsip
-  * Tabel Private
-  * User Aktif
-* Recent Activity (log)
-* Quick Action:
+* Total Team
+* Total User
+* Total Tabel
+* Total Arsip
 
-  * ➕ Buat Tabel
-  * 👤 Tambah User
+#### 🚨 Alert Sistem
 
-**UX:**
+* Team tanpa PIC
+* Tabel tanpa PIC
+* Request akses menumpuk
+* User tanpa team
 
-* Ringkas
-* Data paling penting di atas
+#### ⚡ Quick Action
 
----
-
-## 3️⃣ Halaman Manajemen Tabel Arsip
-
-### 📁 `/dashboard/tables`
-
-### Tampilan
-
-**Table list view + action**
-
-**Kolom:**
-
-* Nama Tabel
-* PIC
-* Visibility (Public / Private)
-* Jumlah Arsip
-* Aksi
-
-**Aksi (icon button):**
-
-* 👁️ Lihat
-* ✏️ Edit Struktur
-* 🔐 Permission
-* 🗑️ Hapus
-
-**UX Rules:**
-
-* Konfirmasi sebelum hapus
-* Filter: Public / Private / PIC
-* Search nama tabel
+* ➕ Buat Team
+* 👑 Assign PIC
+* 📁 Lihat Request Akses
 
 ---
 
-## 4️⃣ Halaman Buat / Edit Tabel
+## 2️⃣ Manajemen Team & PIC (HALAMAN PALING PENTING)
 
-### 🧱 `/dashboard/tables/create`
+### 🧱 `/admin/teams`
 
-### Form:
+### Fungsi
 
-* Nama tabel
-* Deskripsi
-* Visibility:
+Admin **menentukan struktur organisasi & PIC**
 
-  * 🔘 Public
-  * 🔘 Private
-* PIC awal (default: creator)
+### Tabel Team
 
-**CTA:**
+| Team | PIC | Jumlah User | Jumlah Tabel | Aksi |
+| ---- | --- | ----------- | ------------ | ---- |
 
-* **Buat Tabel**
-* Cancel
+### Aksi
 
-**UX:**
+* ➕ Buat Team
+* 👑 Assign / Ganti PIC
+* 👥 Kelola Anggota
+* 🗑️ Hapus Team (dengan validasi)
 
-* Simple, 1 kolom
-* Tooltip penjelasan Public vs Private
+### UX Rules (WAJIB)
 
----
+* ❌ Team **tidak boleh tanpa PIC**
+* ⚠️ Warning jika ganti PIC (tabel terdampak)
+* Tooltip:
 
-## 5️⃣ Halaman Builder Struktur Tabel
-
-### 🧩 `/dashboard/tables/[id]/builder`
-
-### Layout
-
-**Split View**
-
-```
-┌───────────────┬──────────────┐
-│ Column List   │ Column Form  │
-└───────────────┴──────────────┘
-```
+  > “PIC berwenang membuat & mengelola tabel untuk tim ini”
 
 ---
 
-### 🧱 Panel Kiri – Daftar Kolom
+## 3️⃣ Manajemen Tabel Arsip (ADMIN VIEW)
 
-* List kolom
-* Icon tipe data
-* Required badge
-* Drag & reorder (opsional)
+### 📁 `/admin/tables`
 
----
+### Tujuan
 
-### ✏️ Panel Kanan – Form Kolom
+Admin **mengawasi semua tabel**, bukan mengisinya.
 
-Field:
+### Tabel List
 
-* Nama kolom
-* Tipe data (select)
-* Required (checkbox)
-* Option (jika select)
+| Nama Tabel | Team Owner | PIC | Visibility | Arsip | Aksi |
+| ---------- | ---------- | --- | ---------- | ----- | ---- |
 
-**Button:**
+### Visibility (Auto)
 
-* ➕ Tambah Kolom
-* 💾 Simpan
+* 🔒 Tim Owner
+* 🔓 Shared (ada izin lintas tim)
 
-**UX Rules:**
+### Aksi
 
-* Auto-save optional
-* Warning kalau ubah struktur tabel berisi data
+* 👁️ Lihat metadata
+* 🔐 Lihat permission
+* 🧱 Lihat struktur
+* 🗑️ Force delete (admin only)
 
 ---
 
-## 6️⃣ Halaman Permission & PIC
+## 4️⃣ Struktur Tabel (READ / LOCK MODE)
 
-### 🔐 `/dashboard/tables/[id]/permissions`
+### 🧱 `/admin/tables/[id]/structure`
 
-### Konsep: **Permission Matrix**
+### Prinsip
 
-| User | PIC | View | Insert | Edit | Delete | Edit Struktur |
-| ---- | --- | ---- | ------ | ---- | ------ | ------------- |
-| Andi | ☑   | ☑    | ☑      | ☑    | ⛔      | ☑             |
+* Default: **read-only**
+* Edit struktur → **explicit override**
 
-**Fitur:**
+### UX
 
-* Checkbox per izin
-* Toggle PIC
-* Admin override
+* Banner:
 
-**UX:**
+  > ⚠️ Perubahan struktur dapat berdampak ke data
+* Tombol:
 
-* Inline update
-* Toast sukses/gagal
-* Lock icon untuk private table
+  * 🔓 Unlock (Admin)
 
 ---
 
-## 7️⃣ Halaman Manajemen User
+## 5️⃣ Akses & Permintaan (APPROVAL CENTER)
 
-### 👥 `/dashboard/users`
+### 🔐 `/admin/access`
 
-**List User:**
+### Fungsi
+
+Admin **memantau & override** proses izin.
+
+---
+
+### A. Request Akses (Masuk)
+
+| User | Team Asal | Tabel | Diminta | Status | Aksi |
+| ---- | --------- | ----- | ------- | ------ | ---- |
+
+**Aksi**
+
+* Approve
+* Reject
+* Forward ke PIC
+
+---
+
+### B. Permission Overview
+
+| Tabel | Team Owner | Shared ke | PIC |
+| ----- | ---------- | --------- | --- |
+
+Admin bisa:
+
+* Cabut izin lintas tim
+* Assign PIC tambahan
+* Lock tabel (read-only global)
+
+---
+
+## 6️⃣ Manajemen User
+
+### 👥 `/admin/users`
+
+### Kolom
 
 * Nama
 * Email
-* Role
+* Team
 * Status
-* Aksi
+* Role (Admin / User)
 
-**Aksi:**
+### Aksi
 
-* Edit role
+* Assign team
+* Promote / demote admin
+* Suspend user
 * Reset password
-* Nonaktifkan
+
+### UX Rules
+
+* ❌ User **wajib punya team**
+* Admin tidak bisa menurunkan dirinya sendiri (safety)
 
 ---
 
-## 8️⃣ UX Prinsip Penting (WAJIB)
+## 7️⃣ Audit Log (WAJIB)
 
-### ✅ Clarity
+### 📜 `/admin/audit`
 
-* Admin selalu tahu:
+### Log Aktivitas
 
-  * Siapa PIC
-  * Tabel public / private
+* Assign PIC
+* Buat tabel
+* Approve / reject request
+* Ubah permission
+* Hapus tabel
 
-### 🛡️ Safety
+### Filter
 
-* Confirm dialog untuk:
-
-  * Hapus tabel
-  * Ubah struktur
-  * Cabut izin
-
-### ⚡ Efficiency
-
-* Modal, bukan page reload
-* Inline edit
-* Keyboard-friendly
+* User
+* Team
+* Tanggal
+* Jenis aksi
 
 ---
 
-## 9️⃣ Design System (Rekomendasi)
+## 8️⃣ Pengaturan Sistem
 
-* Font: Inter
-* Warna:
+### ⚙️ `/admin/settings`
 
-  * Primary: Indigo / Blue
-  * Danger: Red
-  * Success: Green
-* Icon: Lucide / Heroicons
-* Button:
+### Konfigurasi
 
-  * Primary
-  * Secondary
-  * Destructive
+#### Identitas
+
+* Nama instansi
+* Logo
+* Footer
+
+#### Akses & Keamanan
+
+* Default akses tabel (tim owner)
+* Apakah user boleh browse tabel tim lain
+* Expiry default request
+
+#### Sistem
+
+* Default role user baru
+* Session timeout
 
 ---
 
-## 🔟 Komponen UI Penting (Reusable)
+## 🧩 Komponen UI Reusable (Admin)
 
-* `<PermissionGuard />`
-* `<VisibilityBadge />`
-* `<PICBadge />`
+* `<AdminLayout />`
+* `<TeamTable />`
+* `<AssignPICModal />`
+* `<TableOverview />`
+* `<AccessRequestTable />`
+* `<PermissionViewer />`
 * `<ConfirmDialog />`
-* `<DynamicForm />`
-* `<TableBuilder />`
+* `<AuditLogTable />`
 
 ---
 
-Kalau mau, aku bisa:
+## 🧠 Prinsip UX Admin (FINAL)
 
-* 🎨 Buatin **wireframe visual (deskripsi Figma-ready)**
-* 🧑‍💻 Mapping **UI → component Next.js**
-* 📐 Buat **design system Tailwind**
-* 🧩 Contoh **layout.tsx + sidebar**
+| Prinsip      | Implementasi             |
+| ------------ | ------------------------ |
+| Governance   | Admin pegang struktur    |
+| Delegation   | PIC pegang tabel         |
+| Safety       | No orphan team / table   |
+| Transparency | Audit & permission jelas |
+| Scalability  | Siap deploy ulang        |
 
-Tinggal bilang mau lanjut ke **desain**, **kode**, atau **wireframe detail per halaman** 🚀
+---
+
+## 🧾 RINGKASAN AKHIR
+
+> **Admin UI = Control Tower**
+
+Admin:
+
+* Membentuk team
+* Menentukan PIC
+* Mengawasi akses lintas tim
+* Menjaga sistem tetap sehat
+
+PIC:
+
+* Membuat & mengelola tabel tim
+
+User:
+
+* Bekerja dengan arsip
+
+---
+
+## Langkah Lanjut (pilih salah satu)
+
+1️⃣ **Wireframe Admin (Figma-ready, per halaman)**
+2️⃣ **Mapping ke Next.js folder & layout.tsx**
+3️⃣ **Schema DB + RLS Supabase sesuai flow ini** 🔥
+4️⃣ **Flow diagram visual (Admin → PIC → User)**
+
+Tinggal bilang mau lanjut ke **desain**, **kode**, atau **diagram** 🚀

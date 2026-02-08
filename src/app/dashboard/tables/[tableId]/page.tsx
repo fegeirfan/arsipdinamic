@@ -1,20 +1,11 @@
-import { PlusCircle, File, Search, ListFilter, ArrowLeft } from 'lucide-react';
+import { PlusCircle, File, ListFilter, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
-  CardTitle,
 } from '@/components/ui/card';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
+import { EditableTable } from './editable-table';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -78,7 +69,11 @@ export default async function TableDataPage(props: {
     .from('archive_columns')
     .select('*')
     .eq('table_id', params.tableId)
-    .order('order_index');
+    .order('name');
+
+  if (!columns) {
+    console.log('No columns found for table:', params.tableId);
+  }
 
   const { data: records } = await supabase
     .from('archive_records')
@@ -120,93 +115,23 @@ export default async function TableDataPage(props: {
         </div>
       </div>
 
-      <Card>
-        <CardHeader>
+      <Card className="border-none shadow-none bg-transparent">
+        <CardHeader className="px-0 pb-4">
           <div className="flex flex-col md:flex-row items-center gap-4">
-            <div className="relative w-full md:w-[300px]">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input
-                type="search"
-                placeholder="Search records..."
-                className="w-full rounded-lg bg-background pl-8"
-              />
-            </div>
             <div className="ml-auto flex items-center gap-2 w-full md:w-auto">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="sm" className="h-8 gap-1">
-                    <ListFilter className="h-3.5 w-3.5" />
-                    <span className="sr-only sm:not-sr-only">Filter</span>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuLabel>Filter by</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuCheckboxItem checked>Active</DropdownMenuCheckboxItem>
-                  <DropdownMenuCheckboxItem>Archived</DropdownMenuCheckboxItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-              <Button size="sm" variant="outline" className="h-8 gap-1">
-                <File className="h-3.5 w-3.5" />
-                <span className="sr-only sm:not-sr-only">Export PDF</span>
-              </Button>
-              {canInsert && (
-                <Button size="sm" className="h-8 gap-1" asChild>
-                  <Link href={`/dashboard/tables/${params.tableId}/create`}>
-                    <PlusCircle className="h-3.5 w-3.5" />
-                    <span className="sr-only sm:not-sr-only">Tambah Arsip</span>
-                  </Link>
-                </Button>
-              )}
+              {/* Filter and Export buttons hidden for now to maintain clean UI */}
             </div>
           </div>
         </CardHeader>
-        <CardContent>
-          <div className="rounded-md border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  {columns?.map((col) => (
-                    <TableHead key={col.id}>{col.name}</TableHead>
-                  ))}
-                  <TableHead className="w-[100px]">Data Info</TableHead>
-                  <TableHead className="text-right">Aksi</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {records?.map((record) => (
-                  <TableRow key={record.id}>
-                    {columns?.map((col) => (
-                      <TableCell key={`${record.id}-${col.id}`}>
-                        {renderCell(record, col)}
-                      </TableCell>
-                    ))}
-                    <TableCell>
-                      <div className="flex flex-col text-[10px] text-muted-foreground">
-                        <span>Oleh: {record.created_by_email || 'System'}</span>
-                        <span>{format(new Date(record.created_at), 'dd/MM/yy HH:mm')}</span>
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <RecordRowActions
-                        tableId={params.tableId}
-                        recordId={record.id}
-                        canEdit={canEdit}
-                        canDelete={canDelete}
-                      />
-                    </TableCell>
-                  </TableRow>
-                ))}
-                {(!records || records.length === 0) && (
-                  <TableRow>
-                    <TableCell colSpan={(columns?.length || 0) + 2} className="h-24 text-center">
-                      Tidak ada arsip ditemukan.
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </div>
+        <CardContent className="px-0">
+          <EditableTable
+            tableId={params.tableId}
+            columns={columns || []}
+            initialRecords={records || []}
+            canInsert={canInsert}
+            canEdit={canEdit}
+            canDelete={canDelete}
+          />
         </CardContent>
       </Card>
     </div>

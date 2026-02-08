@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import {
   AlertDialog,
@@ -46,18 +45,10 @@ export function RecordRowActions({
 
   return (
     <div className="flex items-center justify-end gap-1">
-      <Button variant="ghost" size="sm" asChild>
-        <Link href={`/dashboard/tables/${tableId}/record/${recordId}`}>Detail</Link>
-      </Button>
-      {canEdit && (
-        <Button variant="ghost" size="sm" asChild>
-          <Link href={`/dashboard/tables/${tableId}/record/${recordId}/edit`}>Edit</Link>
-        </Button>
-      )}
       {canDelete && (
         <AlertDialog open={open} onOpenChange={setOpen}>
           <AlertDialogTrigger asChild>
-            <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive">
+            <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive h-8 px-3 text-xs font-bold">
               Hapus
             </Button>
           </AlertDialogTrigger>

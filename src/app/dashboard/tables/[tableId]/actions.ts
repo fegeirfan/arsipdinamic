@@ -21,12 +21,11 @@ export async function createRecord(tableId: string, formData: FormData) {
         recordData[col.name] = value
     })
 
-    const { error } = await supabase.from('archive_records').insert({
+    const { data: record, error } = await supabase.from('archive_records').insert({
         table_id: tableId,
         data: recordData,
         created_by: user.id,
-        created_by_email: user.email,
-    })
+    }).select().single()
 
     if (error) {
         console.error('Error creating record:', error)
@@ -34,7 +33,7 @@ export async function createRecord(tableId: string, formData: FormData) {
     }
 
     revalidatePath(`/dashboard/tables/${tableId}`)
-    redirect(`/dashboard/tables/${tableId}`)
+    return { success: true, data: record }
 }
 
 export async function deleteRecord(tableId: string, recordId: string) {
@@ -83,5 +82,35 @@ export async function updateRecord(tableId: string, recordId: string, formData: 
     }
     revalidatePath(`/dashboard/tables/${tableId}`)
     revalidatePath(`/dashboard/tables/${tableId}/record/${recordId}`)
-    redirect(`/dashboard/tables/${tableId}/record/${recordId}`)
+    return { success: true }
+}
+
+export async function patchRecord(tableId: string, recordId: string, columnName: string, value: any) {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) throw new Error('Unauthorized')
+
+    // Fetch current data
+    const { data: record, error: fetchError } = await supabase
+        .from('archive_records')
+        .select('data')
+        .eq('id', recordId)
+        .single()
+
+    if (fetchError || !record) return { error: 'Record not found' }
+
+    const updatedData = { ...record.data, [columnName]: value }
+
+    const { error } = await supabase
+        .from('archive_records')
+        .update({ data: updatedData })
+        .eq('id', recordId)
+
+    if (error) {
+        console.error('Error patching record:', error)
+        return { error: error.message }
+    }
+
+    revalidatePath(`/dashboard/tables/${tableId}`)
+    return { success: true }
 }

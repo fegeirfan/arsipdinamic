@@ -1,146 +1,152 @@
-Mantap. Karena **Admin UI sudah kuat dan kompleks**, maka **User UI harus jadi kebalikannya**:
-👉 **fokus ke akses arsip, cepat, minim keputusan, dan aman**.
 
-Di bawah ini aku susun **UI/UX HALAMAN USER** dengan **struktur yang konsisten dengan Admin**, tapi **lebih sederhana & task-oriented**, siap diterjemahkan ke **Figma / Next.js + Tailwind**.
 
----
+# 🧑‍💼 UI / UX HALAMAN USER (FINAL – ACCESS REQUEST FLOW)
 
-# 🧑‍💼 UI / UX HALAMAN USER
-
-**Sistem Manajemen Arsip**
-
-> **Prinsip utama:**
-> User **tidak mengatur sistem**, hanya **mengakses & mengelola arsip sesuai izin**.
+**Peran User:**
+👉 **Bekerja dengan arsip, bukan mengatur sistem**
 
 ---
 
-## 1️⃣ Layout Global User
+## 0️⃣ Layout Global User
 
-### 🧱 Struktur
+### Struktur
 
 ```
-┌──────────────────────────────┐
-│ Topbar                       │
-├──── Sidebar ────┬────────────┤
-│                 │ Main       │
-│                 │ Content    │
-└─────────────────┴────────────┘
+Topbar
+├─ Sidebar User
+└─ Main Content
 ```
 
----
+### Sidebar User (FINAL)
 
-### 📌 Sidebar (Simplified)
+1. 📁 Arsip Tim Saya
+2. 🌐 Jelajahi Tabel
+3. ⭐ Favorit
+4. 🕓 Aktivitas Saya
+5. 👤 Profil
 
-**Menu:**
-
-* 📁 Arsip Saya
-* ⭐ Favorit
-* 🕓 Riwayat
-* 👤 Profil
-
-> ❌ Tidak ada:
->
-> * Manajemen user
-> * Permission
-> * Struktur tabel
-
-**UX Notes:**
-
-* Group berdasarkan **akses**
-* Badge:
-
-  * 🔐 Private
-  * 👑 PIC (jika user adalah PIC)
-* Sidebar auto-collapse di mobile
+> ❌ Tidak ada menu teknis
+> ❌ Tidak ada permission editor
 
 ---
 
-### 🔝 Topbar User
-
-* Search arsip global
-* Filter cepat (tabel / tanggal)
-* Avatar user:
-
-  * Profil
-  * Logout
-
----
-
-## 2️⃣ Halaman Dashboard User
+## 1️⃣ Dashboard User
 
 ### 🏠 `/dashboard`
 
 ### Tujuan
 
-User **langsung tahu apa yang bisa dia akses & kerjakan**.
+Masuk → **langsung tahu apa yang bisa dikerjakan**
 
-### Komponen
+### Konten
 
-#### 📊 Info Ringkas
+**Ringkasan**
 
-* Tabel yang bisa diakses
-* Arsip milik saya
-* Arsip terakhir diubah
+* Tabel tim saya
+* Arsip yang saya buat
+* Permintaan akses (status saya)
 
-#### ⚡ Quick Action
+**Quick Action**
 
 * ➕ Tambah Arsip
 * 🔍 Cari Arsip
 
-#### 🕓 Recent Activity
-
-* Arsip yang terakhir dibuka / diubah
-
 ---
 
-## 3️⃣ Halaman Daftar Tabel Arsip
+## 2️⃣ Arsip Tim Saya
 
-### 📁 `/tables`
+### 📁 `/tables/my-team`
+
+### Isi
+
+Semua tabel **yang dimiliki tim user**
 
 ### Tampilan
 
-**Grid / list card**
+**List / card**
 
-**Card berisi:**
+**Card**
 
-* Nama Tabel
-* Deskripsi singkat
+* Nama tabel
+* Deskripsi
 * Badge:
 
-  * Public / Private
-  * PIC (jika ya)
-* Jumlah Arsip
-* Aksi:
+  * 👑 PIC (jika user PIC)
+  * 🔒 Tim Saya
+* Jumlah arsip
 
-  * 👁️ Buka
+**Aksi**
 
-**UX Rules:**
-
-* Hanya tabel yang user punya akses
-* Disabled state kalau View-only
-* Sorting:
-
-  * Terbaru
-  * Favorit
+* 👁️ Buka
 
 ---
 
-## 4️⃣ Halaman Isi Arsip (Record List)
+## 3️⃣ Jelajahi Tabel (Tim Lain)
+
+### 🌐 `/tables/browse`
+
+### Tujuan
+
+User **sadar ada tabel lain**, tapi **tidak otomatis bisa akses**
+
+### State Card
+
+| State      | Tampilan       |
+| ---------- | -------------- |
+| Accessible | 👁️ Buka       |
+| Locked     | 🔒 Minta Akses |
+| Pending    | ⏳ Menunggu     |
+
+### Filter
+
+* Team
+* PIC
+* Status akses
+
+---
+
+## 4️⃣ Request Akses (User Flow)
+
+### 🔐 Modal “Minta Akses”
+
+**Isi**
+
+* Tabel tujuan
+* Level akses:
+
+  * View
+  * Insert
+* Catatan (opsional)
+
+**CTA**
+
+* Kirim Permintaan
+
+### UX Setelah Submit
+
+* Card berubah → ⏳ Pending
+* Notifikasi:
+
+  > Permintaan dikirim ke PIC
+
+---
+
+## 5️⃣ Daftar Arsip (Record List)
 
 ### 📄 `/tables/[id]`
 
 ### Tampilan
 
-**Table view (readable, bukan admin-heavy)**
+**Table fokus data**
 
-**Kolom:**
+**Kolom**
 
-* Data arsip
+* Data utama
 * Created at
 * Created by
 * Aksi
 
-**Aksi per baris:**
+**Aksi per baris**
 
 * 👁️ Detail
 * ✏️ Edit (jika allowed)
@@ -148,152 +154,123 @@ User **langsung tahu apa yang bisa dia akses & kerjakan**.
 
 ---
 
-### 🔍 Fitur Penting
-
-* Search per kolom
-* Filter (tanggal / status)
-* Pagination / infinite scroll
-
----
-
-## 5️⃣ Halaman Detail Arsip
+## 6️⃣ Detail Arsip
 
 ### 📄 `/tables/[id]/[recordId]`
 
-### Layout
+### Header
 
 ```
-┌─────────────────────┐
-│ Header (judul)      │
-├─────────────────────┤
-│ Field Viewer        │
-├─────────────────────┤
-│ Action Bar          │
-└─────────────────────┘
+Nama Arsip
+🔐 Akses: Tim Keuangan
+👑 PIC: Andi
 ```
 
----
+### Action Bar
 
-### 📋 Field Viewer
-
-* Label kiri
-* Value kanan
-* Read-only by default
-
-### 🧩 Action Bar
-
-* ✏️ Edit
+* ✏️ Edit (jika boleh)
 * 🖨️ Export PDF
-* ⬇️ Download Lampiran
+* ⬇️ Download lampiran
 
 ---
 
-## 6️⃣ Form Tambah / Edit Arsip
+## 7️⃣ Tambah / Edit Arsip
 
 ### 📝 `/tables/[id]/create`
 
 ### Form Dinamis
 
-> Menggunakan struktur dari admin (Table Builder)
+**UX Rules**
 
-**Komponen:**
+* Field required jelas
+* Field terkunci → read-only + 🔒
+* Error inline
 
-* `<DynamicForm />`
-* Validation inline
-* Required field indicator
-
-**CTA:**
+**CTA**
 
 * 💾 Simpan
 * Cancel
 
-**UX Rules:**
+---
 
-* Auto-focus field pertama
-* Error jelas per field
-* Tidak boleh edit field restricted
+## 8️⃣ Favorit
+
+### ⭐ `/favorites`
+
+* Tabel / arsip yang sering dipakai
+* Shortcut kerja cepat
 
 ---
 
-## 7️⃣ Permission Awareness (UX KRITIS)
+## 9️⃣ Aktivitas Saya
 
-User **harus selalu sadar batas aksesnya**.
+### 🕓 `/activity`
 
-### Contoh UX:
+* Arsip:
 
-* Tombol **disabled + tooltip**
+  * Dibuat
+  * Diubah
+  * Diakses
+* Request:
 
-  > “Anda tidak memiliki izin Edit”
-* Banner kecil:
-
-  > 🔐 Tabel Private – Akses Terbatas
-* Field terkunci:
-
-  * Read-only style
-  * Lock icon
+  * Approved
+  * Rejected
+  * Pending
 
 ---
 
-## 8️⃣ Halaman Profil User
+## 🔔 10️⃣ Notifikasi (Inline)
+
+User dapat notifikasi saat:
+
+* Request disetujui / ditolak
+* Akses dicabut
+* Arsip diubah (jika subscribed)
+
+---
+
+## 1️⃣1️⃣ Profil User
 
 ### 👤 `/profile`
 
+**Isi**
+
 * Nama
 * Email
+* Team
+* Status:
+
+  * 👑 PIC di tabel X
 * Role (read-only)
-* Tabel yang diakses
-* Status PIC
 
 ---
 
-## 9️⃣ UX Prinsip User (BEDA DENGAN ADMIN)
+## 🧩 Komponen UI Reusable (User)
 
-| Prinsip    | Implementasi              |
-| ---------- | ------------------------- |
-| Simplicity | Tidak ada fitur teknis    |
-| Safety     | Tidak bisa melanggar izin |
-| Speed      | Search dominan            |
-| Clarity    | Aksi jelas boleh/tidak    |
-
----
-
-## 🔁 Perbedaan Admin vs User (Ringkas)
-
-| Area           | Admin          | User            |
-| -------------- | -------------- | --------------- |
-| Struktur tabel | ✔              | ❌               |
-| Permission     | ✔              | ❌               |
-| CRUD arsip     | ✔              | ✔ (sesuai izin) |
-| UI Complexity  | Tinggi         | Rendah          |
-| Target UX      | Kontrol sistem | Kerja cepat     |
-
----
-
-## 🔧 Komponen Reusable (User)
-
+* `<UserLayout />`
+* `<TableCard />`
+* `<AccessStateBadge />`
+* `<RequestAccessModal />`
 * `<RecordTable />`
 * `<RecordViewer />`
 * `<DynamicForm />`
 * `<PermissionGuard />`
-* `<AccessDenied />`
 * `<EmptyState />`
 
 ---
 
-## 🧭 Alur Mental User (PENTING)
+## 🧠 Prinsip UX User (FINAL)
 
-> **User berpikir:**
-> “Saya mau cari arsip → lihat → edit → selesai”
-
-UI harus **selalu mendukung alur ini tanpa gangguan**.
+| Prinsip      | Implementasi            |
+| ------------ | ----------------------- |
+| Awareness    | Tahu batas akses        |
+| Simplicity   | Tidak ada menu teknis   |
+| Transparency | Sumber akses jelas      |
+| Safety       | Tidak bisa langgar izin |
+| Speed        | Fokus data & search     |
 
 ---
 
-Kalau mau lanjut, aku bisa:
+## 🧾 RINGKASAN USER FLOW
 
-1️⃣ Buat **wireframe user per halaman (Figma-ready)**
-2️⃣ Mapping **Admin Table Builder → DynamicForm User**
-3️⃣ Buat **role-based routing Next.js**
-4️⃣ Contoh **Record Table + PermissionGuard code**
-
-Tinggal bilang mau lanjut ke **desain**, **alur data**, atau **kode langsung** 🔥
+> **User melihat tabel → jika terkunci → request → tunggu → pakai**
