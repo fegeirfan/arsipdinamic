@@ -18,6 +18,7 @@ import {
     SelectValue,
 } from '@/components/ui/select'
 import { createTableFromMyArchives } from '../actions'
+import { Lightbulb } from 'lucide-react'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { Badge } from '@/components/ui/badge'
@@ -177,8 +178,8 @@ export default async function CreateTableFromMyArchivesPage() {
                                     <SelectValue placeholder="Pilih Visibilitas" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="private">🔒 Private (Hanya Tim & Admin)</SelectItem>
-                                    <SelectItem value="public">🌐 Public (Dapat dilihat oleh semua unit)</SelectItem>
+                                    <SelectItem value="private">Private (Hanya Tim & Admin)</SelectItem>
+                                    <SelectItem value="public">Public (Dapat dilihat oleh semua unit)</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
@@ -195,11 +196,16 @@ export default async function CreateTableFromMyArchivesPage() {
                 </CardContent>
             </Card>
 
-            <div className="bg-amber-500/5 border border-amber-500/10 rounded-lg p-4">
-                <p className="text-sm text-amber-500 font-medium">💡 Informasi:</p>
-                <p className="text-sm text-muted-foreground">
-                    Setelah tabel dibuat, Anda akan diarahkan ke <strong>Table Builder</strong> untuk menentukan kolom-kolom data yang diperlukan.
-                </p>
+            <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-4">
+                <div className="flex items-start gap-2">
+                    <Lightbulb className="h-5 w-5 text-indigo-600 flex-shrink-0 mt-0.5" />
+                    <div>
+                        <p className="text-sm text-indigo-700 font-medium">Informasi</p>
+                        <p className="text-sm text-slate-600 mt-1">
+                            Setelah tabel dibuat, Anda akan diarahkan ke <strong>Table Builder</strong> untuk menentukan kolom-kolom data yang diperlukan.
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
     )

@@ -81,8 +81,8 @@ export function RequestAccessModal({ tableId, tableName }: { tableId: string, ta
                                     <SelectValue placeholder="Pilih Level Akses" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="view">👁️ View (Hanya Lihat)</SelectItem>
-                                    <SelectItem value="insert">➕ Insert (Tambah Data)</SelectItem>
+                                    <SelectItem value="view">View (Hanya Lihat)</SelectItem>
+                                    <SelectItem value="insert">Insert (Tambah Data)</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>

@@ -102,15 +102,15 @@ export function MyArchivesTable({
                 />
             </div>
 
-            <div className="rounded-xl border border-input/60 bg-card shadow-sm overflow-hidden">
-                <Table>
+            <div className="rounded-xl border border-input/60 bg-card shadow-sm overflow-x-auto scrollbar-thin scrollbar-thumb-muted-foreground/20">
+                <Table className="min-w-[800px]">
                     <TableHeader>
                         <TableRow className="bg-muted/50 hover:bg-muted/50">
-                            <TableHead className="font-extrabold text-[11px] uppercase tracking-wider h-12 px-4">Nama Tabel</TableHead>
-                            <TableHead className="font-extrabold text-[11px] uppercase tracking-wider h-12 px-4">Tim</TableHead>
-                            <TableHead className="font-extrabold text-[11px] uppercase tracking-wider h-12 px-4">Visibilitas</TableHead>
-                            <TableHead className="font-extrabold text-[11px] uppercase tracking-wider h-12 px-4">Dibuat</TableHead>
-                            <TableHead className="text-right font-extrabold text-[11px] uppercase tracking-wider h-12 px-4">Aksi</TableHead>
+                            <TableHead className="font-extrabold text-[11px] uppercase tracking-wider h-12 px-4 text-center">Nama Tabel</TableHead>
+                            <TableHead className="font-extrabold text-[11px] uppercase tracking-wider h-12 px-4 text-center">Tim</TableHead>
+                            <TableHead className="font-extrabold text-[11px] uppercase tracking-wider h-12 px-4 text-center">Visibilitas</TableHead>
+                            <TableHead className="font-extrabold text-[11px] uppercase tracking-wider h-12 px-4 text-center">Dibuat</TableHead>
+                            <TableHead className="text-center font-extrabold text-[11px] uppercase tracking-wider h-12 px-4">Aksi</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -121,26 +121,28 @@ export function MyArchivesTable({
                             return (
                                 <TableRow key={table.id} className="group hover:bg-muted/30 transition-all border-b border-input/40">
                                     <TableCell className="py-3 px-4">
-                                        <div className="flex flex-col gap-1">
+                                        <div className="flex flex-col gap-1 items-center justify-center">
                                             <div className="flex items-center gap-2">
                                                 <TableIcon className="h-4 w-4 text-primary" />
-                                                <span className="font-bold text-sm">{table.name}</span>
+                                                <span className="font-bold text-sm text-center">{table.name}</span>
                                                 {isPic && (
                                                     <Badge variant="outline" className="text-[9px] h-4 px-1.5 bg-emerald-50 text-emerald-700 border-emerald-200">PIC</Badge>
                                                 )}
                                             </div>
                                             {table.description && (
-                                                <span className="text-[11px] text-muted-foreground line-clamp-1 max-w-[300px]">{table.description}</span>
+                                                <span className="text-[11px] text-muted-foreground line-clamp-1 max-w-[300px] text-center">{table.description}</span>
                                             )}
                                         </div>
                                     </TableCell>
-                                    <TableCell className="py-3 px-4">
-                                        <Badge variant="secondary" className="text-[10px] font-medium bg-muted/60">
-                                            {table.team?.name || 'TANPA TIM'}
-                                        </Badge>
+                                    <TableCell className="py-3 px-4 text-center">
+                                        <div className="flex justify-center">
+                                            <Badge variant="secondary" className="text-[10px] font-medium bg-muted/60">
+                                                {table.team?.name || 'TANPA TIM'}
+                                            </Badge>
+                                        </div>
                                     </TableCell>
-                                    <TableCell className="py-3 px-4">
-                                        <div className="flex items-center gap-1.5">
+                                    <TableCell className="py-3 px-4 text-center">
+                                        <div className="flex items-center justify-center gap-1.5">
                                             {table.visibility === 'public' ? (
                                                 <Globe className="h-3.5 w-3.5 text-blue-500" />
                                             ) : (
@@ -149,13 +151,13 @@ export function MyArchivesTable({
                                             <span className="text-[11px] font-bold uppercase tracking-tight">{table.visibility}</span>
                                         </div>
                                     </TableCell>
-                                    <TableCell className="py-3 px-4">
+                                    <TableCell className="py-3 px-4 text-center">
                                         <span className="text-[11px] text-muted-foreground whitespace-nowrap">
                                             {new Date(table.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
                                         </span>
                                     </TableCell>
-                                    <TableCell className="text-right py-3 px-4">
-                                        <div className="flex items-center justify-end gap-2">
+                                    <TableCell className="text-center py-3 px-4">
+                                        <div className="flex items-center justify-center gap-2">
                                             <Button asChild size="sm" variant="outline" className="h-8 px-3 gap-2 text-xs font-bold hover:border-primary hover:text-primary transition-all">
                                                 <Link href={`/dashboard/tables/${table.id}`}>
                                                     <Eye className="h-3.5 w-3.5" /> Buka

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Search, MoreHorizontal } from 'lucide-react'
+import { Search, MoreHorizontal, ClipboardList, UserCog, Ban, AlertTriangle } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -73,7 +73,7 @@ export function UsersClient({ initialProfiles, initialTeams }: UsersClientProps)
     return (
         <div className="space-y-6">
             <div className="flex items-center justify-between">
-                <h1 className="text-lg font-semibold md:text-2xl">Manajemen User</h1>
+                <h1 className="text-page-title md:text-2xl">Manajemen User</h1>
                 <div className="flex items-center gap-2">
                     <div className="relative">
                         <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -89,10 +89,10 @@ export function UsersClient({ initialProfiles, initialTeams }: UsersClientProps)
                 </div>
             </div>
 
-            <Card className="border-sidebar-accent/10">
+            <Card className="bg-white border-slate-200 rounded-lg shadow-none">
                 <CardHeader>
-                    <CardTitle>Daftar Pengguna</CardTitle>
-                    <CardDescription>
+                    <CardTitle className="text-section-title">Daftar Pengguna</CardTitle>
+                    <CardDescription className="text-body text-slate-500">
                         Kelola akses, role, dan penempatan tim untuk seluruh pengguna sistem.
                     </CardDescription>
                 </CardHeader>
@@ -163,7 +163,8 @@ export function UsersClient({ initialProfiles, initialTeams }: UsersClientProps)
                                                         setAssignTeamOpen(true)
                                                     }}
                                                 >
-                                                    📋 Assign Team
+                                                    <ClipboardList className="mr-2 h-4 w-4" />
+                                                    Assign Team
                                                 </DropdownMenuItem>
                                                 <DropdownMenuItem
                                                     onClick={() => {
@@ -171,11 +172,13 @@ export function UsersClient({ initialProfiles, initialTeams }: UsersClientProps)
                                                         setEditRoleOpen(true)
                                                     }}
                                                 >
-                                                    👤 Edit Role
+                                                    <UserCog className="mr-2 h-4 w-4" />
+                                                    Edit Role
                                                 </DropdownMenuItem>
                                                 <DropdownMenuSeparator />
                                                 <DropdownMenuItem className="text-destructive">
-                                                    ⏸️ Suspend User
+                                                    <Ban className="mr-2 h-4 w-4" />
+                                                    Suspend User
                                                 </DropdownMenuItem>
                                             </DropdownMenuContent>
                                         </DropdownMenu>
@@ -196,12 +199,17 @@ export function UsersClient({ initialProfiles, initialTeams }: UsersClientProps)
                 </CardContent>
             </Card>
 
-            <div className="bg-amber-500/5 border border-amber-500/10 rounded-lg p-4">
-                <p className="text-sm text-amber-500 font-medium">⚠️ UX Warning:</p>
-                <p className="text-sm text-muted-foreground">
-                    Setiap user wajib memiliki tim untuk dapat mengakses atau membuat arsip.
-                    User tanpa tim tidak akan melihat data apapun.
-                </p>
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                <div className="flex items-start gap-2">
+                    <AlertTriangle className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                    <div>
+                        <p className="text-sm text-amber-700 font-medium">UX Warning</p>
+                        <p className="text-sm text-slate-600 mt-1">
+                            Setiap user wajib memiliki tim untuk dapat mengakses atau membuat arsip.
+                            User tanpa tim tidak akan melihat data apapun.
+                        </p>
+                    </div>
+                </div>
             </div>
 
             {/* Assign Team Dialog */}

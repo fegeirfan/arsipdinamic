@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useTransition } from 'react'
 import {
     Table,
     TableBody,
@@ -14,7 +14,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { format } from 'date-fns'
 import { Plus, Save, X, Loader2, Check, ExternalLink, Upload, Search } from 'lucide-react'
-import { createRecord, patchRecord } from './actions'
+import { createRecord, patchRecord, deleteRecord } from './actions'
 import { useToast } from '@/hooks/use-toast'
 import { RecordRowActions } from './record-row-actions'
 import Link from 'next/link'
@@ -64,14 +64,29 @@ function MiniDriveUpload({
 
                 const res = await fetch(scriptUrl, {
                     method: 'POST',
-                    body: JSON.stringify(payload)
+                    body: JSON.stringify(payload),
+                    headers: { 'Content-Type': 'text/plain' }
                 })
-                const data = await res.json()
+
+                if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`)
+
+                const text = await res.text()
+                let data
+                try {
+                    data = JSON.parse(text)
+                } catch (e) {
+                    throw new Error('Script returned invalid JSON')
+                }
+
                 if (data.url) {
                     onUploadSuccess(data.url)
+                } else if (data.error) {
+                    throw new Error(data.error)
+                } else {
+                    throw new Error('No URL returned')
                 }
             }
-        } catch (err) {
+        } catch (err: any) {
             console.error('Upload failed', err)
         } finally {
             setIsUploading(false)
@@ -134,6 +149,7 @@ export function EditableTable({
     const [quickAdd, setQuickAdd] = useState<Record<string, any>>({})
     const [isAdding, setIsAdding] = useState(false)
     const [isEditMode, setIsEditMode] = useState(false)
+    const [isPending, startTransition] = useTransition()
     const { toast } = useToast()
     const inputRef = useRef<HTMLInputElement>(null)
 
@@ -189,23 +205,25 @@ export function EditableTable({
             return
         }
 
-        setIsSaving(true)
-        try {
-            const result = await patchRecord(tableId, recordId, columnName, editValue)
-            if (result.success) {
-                setRecords(prev => prev.map(r =>
-                    r.id === recordId ? { ...r, data: { ...r.data, [columnName]: editValue } } : r
-                ))
-                setEditingCell(null)
-                toast({ title: 'Tersimpan' })
-            } else {
-                toast({ title: 'Gagal', description: result.error, variant: 'destructive' })
+        // Optimistic Update
+        const previousRecords = [...records]
+        setRecords(prev => prev.map(r =>
+            r.id === recordId ? { ...r, data: { ...r.data, [columnName]: editValue } } : r
+        ))
+        setEditingCell(null)
+
+        startTransition(async () => {
+            try {
+                const result = await patchRecord(tableId, recordId, columnName, editValue)
+                if (!result.success) {
+                    setRecords(previousRecords)
+                    toast({ title: 'Gagal', description: result.error, variant: 'destructive' })
+                }
+            } catch (err) {
+                setRecords(previousRecords)
+                toast({ title: 'Error', description: 'Gagal menyimpan perubahan ke server', variant: 'destructive' })
             }
-        } catch (err) {
-            toast({ title: 'Error', description: 'Terjadi kesalahan sistem', variant: 'destructive' })
-        } finally {
-            setIsSaving(false)
-        }
+        })
     }
 
     const handleQuickAdd = async () => {
@@ -222,25 +240,62 @@ export function EditableTable({
         }
 
         setIsAdding(true)
-        try {
-            const formData = new FormData()
-            Object.entries(quickAdd).forEach(([key, val]) => {
-                formData.append(key, val)
-            })
+        const previousRecords = [...records]
 
-            const result = await createRecord(tableId, formData)
-            if (result.success && result.data) {
-                setRecords(prev => [result.data as RecordData, ...prev])
-                setQuickAdd({})
-                toast({ title: 'Berhasil', description: 'Arsip ditambahkan' })
-            } else {
-                toast({ title: 'Gagal', description: result.error, variant: 'destructive' })
-            }
-        } catch (err) {
-            toast({ title: 'Error', description: 'Gagal koneksi server', variant: 'destructive' })
-        } finally {
-            setIsAdding(false)
+        // Dynamic temp id for optimistic row
+        const tempId = `temp-${Date.now()}`
+        const optimisticRecord: RecordData = {
+            id: tempId,
+            data: { ...quickAdd },
+            created_at: new Date().toISOString()
         }
+
+        setRecords(prev => [optimisticRecord, ...prev])
+        setQuickAdd({})
+
+        startTransition(async () => {
+            try {
+                const formData = new FormData()
+                Object.entries(optimisticRecord.data).forEach(([key, val]) => {
+                    formData.append(key, val)
+                })
+
+                const result = await createRecord(tableId, formData)
+                if (result.success && result.data) {
+                    // Update our list with the real record (replace temp)
+                    setRecords(prev => prev.map(r => r.id === tempId ? (result.data as RecordData) : r))
+                    toast({ title: 'Berhasil', description: 'Arsip ditambahkan' })
+                } else {
+                    setRecords(previousRecords)
+                    toast({ title: 'Gagal', description: result.error, variant: 'destructive' })
+                }
+            } catch (err) {
+                setRecords(previousRecords)
+                toast({ title: 'Error', description: 'Gagal koneksi server', variant: 'destructive' })
+            } finally {
+                setIsAdding(false)
+            }
+        })
+    }
+
+    const handleDeleteRecord = async (recordId: string) => {
+        const previousRecords = [...records]
+        setRecords(prev => prev.filter(r => r.id !== recordId))
+
+        startTransition(async () => {
+            try {
+                const result = await deleteRecord(tableId, recordId)
+                if (!result.success) {
+                    setRecords(previousRecords)
+                    toast({ title: 'Gagal Hapus', description: result.error, variant: 'destructive' })
+                } else {
+                    toast({ title: 'Terhapus' })
+                }
+            } catch (err) {
+                setRecords(previousRecords)
+                toast({ title: 'Error', description: 'Gagal terhubung ke server', variant: 'destructive' })
+            }
+        })
     }
 
     const getColOptions = (col: Column) => {
@@ -259,32 +314,37 @@ export function EditableTable({
                 return (
                     <MiniDriveUpload
                         scriptUrl={options[0]}
-                        defaultValue={value}
+                        defaultValue={editValue || value}
                         isEditMode={isEditMode}
                         onUploadSuccess={(url) => {
                             setEditValue(url)
-                            const triggerSave = async () => {
-                                setIsSaving(true)
+                            const previousRecords = [...records]
+                            setRecords(prev => prev.map(r => r.id === record.id ? { ...r, data: { ...r.data, [col.name]: url } } : r))
+                            setEditingCell(null)
+
+                            startTransition(async () => {
                                 try {
                                     const result = await patchRecord(tableId, record.id, col.name, url)
                                     if (result.success) {
-                                        setRecords(prev => prev.map(r => r.id === record.id ? { ...r, data: { ...r.data, [col.name]: url } } : r))
-                                        setEditingCell(null)
+                                        toast({ title: 'Tersimpan', description: 'File Drive berhasil dikaitkan.' })
+                                    } else {
+                                        setRecords(previousRecords)
+                                        toast({ variant: 'destructive', title: 'Gagal Simpan', description: result.error })
                                     }
-                                } finally {
-                                    setIsSaving(false)
+                                } catch (err) {
+                                    setRecords(previousRecords)
+                                    toast({ variant: 'destructive', title: 'Error', description: 'Gagal menyimpan link file ke database.' })
                                 }
-                            }
-                            triggerSave()
+                            })
                         }}
                     />
                 )
             }
             return (
-                <div className="flex items-center gap-1">
+                <div className="flex items-center justify-center gap-1">
                     <Input
                         ref={inputRef}
-                        className="h-8 py-0 px-2 text-sm focus-visible:ring-ring border-primary/30"
+                        className="h-8 py-0 px-2 text-sm focus-visible:ring-ring border-primary/30 text-center"
                         value={editValue || ''}
                         onChange={(e) => setEditValue(e.target.value)}
                         onKeyDown={(e) => {
@@ -304,18 +364,18 @@ export function EditableTable({
                 return (
                     <div
                         className={cn(
-                            "p-2 rounded-md transition-all text-xs min-h-[2rem] flex items-center",
+                            "p-2 rounded-md transition-all text-xs min-h-[2rem] flex items-center justify-center",
                             isEditMode && canEdit ? "cursor-pointer hover:bg-accent border border-transparent hover:border-input" : ""
                         )}
                         onClick={() => handleCellClick(record.id, col.name, value)}
                     >
-                        {value ? format(new Date(value), 'dd MMM yyyy') : <span className="text-muted-foreground/50">Kosong</span>}
+                        {value ? format(new Date(value), 'dd MMM yyyy') : <span className="text-muted-foreground/50 text-center">Kosong</span>}
                     </div>
                 )
             case 'file':
             case 'drive':
                 return value ? (
-                    <div className="flex items-center gap-2 group/file p-1">
+                    <div className="flex items-center justify-center gap-2 group/file p-1">
                         <Link
                             href={value}
                             className="bg-primary/5 text-primary border border-primary/20 px-2 py-1 rounded-md text-[10px] font-bold hover:bg-primary/10 transition-colors flex items-center gap-1.5"
@@ -338,7 +398,7 @@ export function EditableTable({
                 ) : (
                     <div
                         className={cn(
-                            "text-muted-foreground/60 italic p-2 rounded-md text-xs min-h-[2rem] flex items-center",
+                            "text-muted-foreground/60 italic p-2 rounded-md text-xs min-h-[2rem] flex items-center justify-center",
                             isEditMode && canEdit ? "cursor-pointer hover:bg-accent border border-dashed border-input" : ""
                         )}
                         onClick={() => handleCellClick(record.id, col.name, value)}
@@ -350,7 +410,7 @@ export function EditableTable({
                 return (
                     <div
                         className={cn(
-                            "p-2 rounded-md text-xs min-h-[2rem] flex items-center",
+                            "p-2 rounded-md text-xs min-h-[2rem] flex items-center justify-center",
                             isEditMode && canEdit ? "cursor-pointer hover:bg-accent border border-transparent hover:border-input" : ""
                         )}
                         onClick={() => handleCellClick(record.id, col.name, value)}
@@ -362,7 +422,7 @@ export function EditableTable({
                 return (
                     <div
                         className={cn(
-                            "text-right p-2 rounded-md text-xs min-h-[2rem] flex items-center justify-end font-mono font-medium",
+                            "text-center p-2 rounded-md text-xs min-h-[2rem] flex items-center justify-center font-mono font-medium",
                             isEditMode && canEdit ? "cursor-pointer hover:bg-accent border border-transparent hover:border-input" : ""
                         )}
                         onClick={() => handleCellClick(record.id, col.name, value)}
@@ -374,12 +434,12 @@ export function EditableTable({
                 return (
                     <div
                         className={cn(
-                            "p-2 rounded-md min-h-[2rem] text-sm text-foreground",
+                            "p-2 rounded-md min-h-[2rem] text-sm text-foreground flex items-center justify-center",
                             isEditMode && canEdit ? "cursor-pointer hover:bg-accent border border-transparent hover:border-input" : ""
                         )}
                         onClick={() => handleCellClick(record.id, col.name, value)}
                     >
-                        {value || <span className="text-muted-foreground/30 italic text-xs">Klik untuk isi...</span>}
+                        {value || <span className="text-muted-foreground/30 italic text-xs text-center">Klik untuk isi...</span>}
                     </div>
                 )
         }
@@ -398,6 +458,12 @@ export function EditableTable({
                     />
                 </div>
                 <div className="flex items-center gap-3 w-full sm:w-auto">
+                    {isPending && (
+                        <div className="flex items-center gap-2 text-[11px] text-primary animate-pulse font-medium">
+                            <Loader2 className="h-3 w-3 animate-spin" />
+                            <span>Sinkronisasi...</span>
+                        </div>
+                    )}
                     {canEdit && (
                         <Button
                             variant={isEditMode ? "destructive" : "outline"}
@@ -415,18 +481,18 @@ export function EditableTable({
                 </div>
             </div>
 
-            <div className="rounded-xl border border-input/60 bg-card shadow-sm overflow-x-auto ring-1 ring-black/5">
-                <Table>
+            <div className="rounded-xl border border-input/60 bg-card shadow-sm overflow-x-auto ring-1 ring-black/5 scrollbar-thin scrollbar-thumb-muted-foreground/20">
+                <Table className="min-width-[1000px] w-full">
                     <TableHeader>
                         <TableRow className="bg-muted/50 hover:bg-muted/50 border-b-input/60">
                             {columns?.map((col) => (
-                                <TableHead key={col.id} className="font-extrabold text-foreground h-12 py-3 px-4 text-[11px] uppercase tracking-tight">
+                                <TableHead key={col.id} className="font-extrabold text-foreground h-12 py-3 px-4 text-[11px] uppercase tracking-tight text-center">
                                     {col.name}
                                     {col.is_required && <span className="text-destructive ml-1">*</span>}
                                 </TableHead>
                             ))}
                             {isEditMode && (
-                                <TableHead className="text-right text-[11px] font-extrabold h-12 py-3 px-4 uppercase tracking-tight">Aksi</TableHead>
+                                <TableHead className="text-center text-[11px] font-extrabold h-12 py-3 px-4 uppercase tracking-tight">Aksi</TableHead>
                             )}
                         </TableRow>
                     </TableHeader>
@@ -458,16 +524,18 @@ export function EditableTable({
                                         </TableCell>
                                     )
                                 })}
-                                <TableCell className="text-right py-4 px-4">
-                                    <Button
-                                        size="sm"
-                                        className="h-9 px-6 gap-2 font-bold shadow-md bg-primary hover:bg-primary/90 transition-all"
-                                        onClick={handleQuickAdd}
-                                        disabled={isAdding}
-                                    >
-                                        {isAdding ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
-                                        Simpan
-                                    </Button>
+                                <TableCell className="text-center py-4 px-4">
+                                    <div className="flex justify-center">
+                                        <Button
+                                            size="sm"
+                                            className="h-9 px-6 gap-2 font-bold shadow-md bg-primary hover:bg-primary/90 transition-all"
+                                            onClick={handleQuickAdd}
+                                            disabled={isAdding || isPending}
+                                        >
+                                            {(isAdding || isPending) ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
+                                            Simpan
+                                        </Button>
+                                    </div>
                                 </TableCell>
                             </TableRow>
                         )}
@@ -480,13 +548,14 @@ export function EditableTable({
                                     </TableCell>
                                 ))}
                                 {isEditMode && (
-                                    <TableCell className="text-right py-2 px-4 whitespace-nowrap">
-                                        <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <TableCell className="text-center py-2 px-4 whitespace-nowrap">
+                                        <div className="opacity-0 group-hover:opacity-100 transition-opacity flex justify-center">
                                             <RecordRowActions
                                                 tableId={tableId}
                                                 recordId={record.id}
                                                 canEdit={canEdit && isEditMode}
                                                 canDelete={canDelete && isEditMode}
+                                                onDeleteOptimistic={() => handleDeleteRecord(record.id)}
                                             />
                                         </div>
                                     </TableCell>

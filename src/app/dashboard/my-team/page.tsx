@@ -16,7 +16,7 @@ import {
 } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { PlusCircle, Eye, Shield } from 'lucide-react'
+import { PlusCircle, Eye, Shield, Lock } from 'lucide-react'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 
@@ -36,7 +36,8 @@ export default async function MyTeamArchivesPage() {
         .single()
 
     // Fallback: ambil nama tim terpisah jika join kosong (RLS/relasi)
-    let teamName: string | null = profile?.team?.name ?? null
+    const teamData = profile?.team as any
+    let teamName: string | null = (Array.isArray(teamData) ? teamData[0]?.name : teamData?.name) ?? null
     if (profile?.team_id && !teamName) {
         const { data: team } = await supabase
             .from('teams')
@@ -106,8 +107,8 @@ export default async function MyTeamArchivesPage() {
                                         {table.description || 'Tidak ada deskripsi.'}
                                     </TableCell>
                                     <TableCell className="text-center">
-                                        <Badge variant="outline" className="font-normal border-sidebar-accent/20 bg-sidebar-accent/5 text-sidebar-accent">
-                                            🔒 Tim Saya
+                                        <Badge variant="outline" className="gap-1 font-normal border-indigo-200 bg-indigo-50 text-indigo-700">
+                                            <Lock className="h-3 w-3" /> Tim Saya
                                         </Badge>
                                     </TableCell>
                                     <TableCell className="text-right">

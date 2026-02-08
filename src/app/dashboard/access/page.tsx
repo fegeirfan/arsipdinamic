@@ -129,11 +129,16 @@ export default async function AccessRequestsPage() {
                 </CardContent>
             </Card>
 
-            <div className="bg-sidebar-accent/5 border border-sidebar-accent/10 rounded-lg p-4">
-                <p className="text-sm text-sidebar-accent font-medium">💡 Admin Privilege:</p>
-                <p className="text-sm text-muted-foreground">
-                    Admin dapat menyetujui akses lintas tim secara langsung atau meneruskannya ke PIC tim terkait untuk keputusan internal.
-                </p>
+            <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-4">
+                <div className="flex items-start gap-2">
+                    <ShieldCheck className="h-5 w-5 text-indigo-600 flex-shrink-0 mt-0.5" />
+                    <div>
+                        <p className="text-sm text-indigo-700 font-medium">Admin Privilege</p>
+                        <p className="text-sm text-slate-600 mt-1">
+                            Admin dapat menyetujui akses lintas tim secara langsung atau meneruskannya ke PIC tim terkait untuk keputusan internal.
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
     )

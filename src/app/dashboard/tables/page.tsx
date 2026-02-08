@@ -11,7 +11,8 @@ import {
   Trash2,
   Database,
   Search,
-  ShieldAlert
+  ShieldAlert,
+  ClipboardList
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -205,11 +206,16 @@ export default async function TablesPage() {
         )}
       </div>
 
-      <div className="bg-sidebar-accent/5 border border-sidebar-accent/10 rounded-lg p-4 mt-8">
-        <p className="text-sm text-sidebar-accent font-bold">📋 Governance Note:</p>
-        <p className="text-sm text-muted-foreground">
-          Pastikan setiap tabel memiliki **Team Owner** dan **PIC** yang valid untuk menjamin akuntabilitas data.
-        </p>
+      <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-4 mt-8">
+        <div className="flex items-start gap-2">
+          <ClipboardList className="h-5 w-5 text-indigo-600 flex-shrink-0 mt-0.5" />
+          <div>
+            <p className="text-sm text-indigo-700 font-medium">Governance Note</p>
+            <p className="text-sm text-slate-600 mt-1">
+              Pastikan setiap tabel memiliki **Team Owner** dan **PIC** yang valid untuk menjamin akuntabilitas data.
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );

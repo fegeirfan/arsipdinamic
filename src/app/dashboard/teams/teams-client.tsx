@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Crown, Users, MoreHorizontal } from 'lucide-react'
+import { Crown, Users, MoreHorizontal, Trash2, Lightbulb } from 'lucide-react'
 import {
     Card,
     CardContent,
@@ -81,14 +81,14 @@ export function TeamsClient({ initialTeams, initialUsers }: TeamsClientProps) {
     return (
         <div className="space-y-6">
             <div className="flex items-center justify-between">
-                <h1 className="text-lg font-semibold md:text-2xl">Manajemen Team & PIC</h1>
+                <h1 className="text-page-title md:text-2xl">Manajemen Team & PIC</h1>
                 <CreateTeamDialog users={users} onTeamCreated={handleTeamCreated} />
             </div>
 
-            <Card className="border-sidebar-accent/10">
+            <Card className="bg-white border-slate-200 rounded-lg shadow-none">
                 <CardHeader>
-                    <CardTitle>Daftar Tim</CardTitle>
-                    <CardDescription>
+                    <CardTitle className="text-section-title">Daftar Tim</CardTitle>
+                    <CardDescription className="text-body text-slate-500">
                         Admin menentukan struktur organisasi dan menunjuk PIC untuk setiap tim.
                     </CardDescription>
                 </CardHeader>
@@ -152,7 +152,8 @@ export function TeamsClient({ initialTeams, initialUsers }: TeamsClientProps) {
                                                         setAssignPicOpen(true)
                                                     }}
                                                 >
-                                                    👑 Assign / Ganti PIC
+                                                    <Crown className="mr-2 h-4 w-4" />
+                                                    Assign / Ganti PIC
                                                 </DropdownMenuItem>
                                                 <DropdownMenuItem
                                                     onClick={() => {
@@ -160,7 +161,8 @@ export function TeamsClient({ initialTeams, initialUsers }: TeamsClientProps) {
                                                         setManageMembersOpen(true)
                                                     }}
                                                 >
-                                                    👥 Kelola Anggota
+                                                    <Users className="mr-2 h-4 w-4" />
+                                                    Kelola Anggota
                                                 </DropdownMenuItem>
                                                 <DropdownMenuSeparator />
                                                 <DeleteTeamDialog
@@ -172,7 +174,8 @@ export function TeamsClient({ initialTeams, initialUsers }: TeamsClientProps) {
                                                             className="text-destructive"
                                                             onSelect={(e) => e.preventDefault()}
                                                         >
-                                                            🗑️ Hapus Team
+                                                            <Trash2 className="mr-2 h-4 w-4" />
+                                                            Hapus Team
                                                         </DropdownMenuItem>
                                                     }
                                                 />
@@ -193,11 +196,16 @@ export function TeamsClient({ initialTeams, initialUsers }: TeamsClientProps) {
                 </CardContent>
             </Card>
 
-            <div className="bg-sidebar-accent/5 border border-sidebar-accent/10 rounded-lg p-4">
-                <p className="text-sm text-sidebar-accent font-medium">💡 UX Note:</p>
-                <p className="text-sm text-muted-foreground">
-                    Tim tidak boleh tanpa PIC. PIC berwenang membuat & mengelola tabel untuk tim yang bersangkutan.
-                </p>
+            <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-4">
+                <div className="flex items-start gap-2">
+                    <Lightbulb className="h-5 w-5 text-indigo-600 flex-shrink-0 mt-0.5" />
+                    <div>
+                        <p className="text-sm text-indigo-700 font-medium">UX Note</p>
+                        <p className="text-sm text-slate-600 mt-1">
+                            Tim tidak boleh tanpa PIC. PIC berwenang membuat & mengelola tabel untuk tim yang bersangkutan.
+                        </p>
+                    </div>
+                </div>
             </div>
 
             {/* Assign PIC Dialog */}

@@ -16,7 +16,7 @@ import {
 } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Eye, Clock, Search, Globe } from 'lucide-react'
+import { Eye, Clock, Search, Globe, Lock } from 'lucide-react'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { RequestAccessModal } from './request-access-modal'
@@ -119,8 +119,8 @@ export default async function BrowseTablesPage() {
                                                 </Badge>
                                             )}
                                             {status === 'locked' && (
-                                                <Badge variant="outline" className="gap-1 border-muted-foreground/30 bg-muted/5 text-muted-foreground">
-                                                    🔒 Terkunci
+                                                <Badge variant="outline" className="gap-1 border-slate-300 bg-slate-100 text-slate-700">
+                                                    <Lock className="h-3 w-3" /> Terkunci
                                                 </Badge>
                                             )}
                                         </TableCell>

@@ -111,8 +111,8 @@ export default async function EditTablePage(props: {
                                     <SelectValue placeholder="Pilih Visibilitas" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="private">🔒 Private (Hanya Tim & Admin)</SelectItem>
-                                    <SelectItem value="public">🌐 Public (Dapat dilihat oleh semua unit)</SelectItem>
+                                    <SelectItem value="private">Private (Hanya Tim & Admin)</SelectItem>
+                                    <SelectItem value="public">Public (Dapat dilihat oleh semua unit)</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>

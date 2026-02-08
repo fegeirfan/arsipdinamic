@@ -16,6 +16,7 @@ import {
 import { deleteTableFromMyArchives } from './actions'
 import { useTransition } from 'react'
 import { useRouter } from 'next/navigation'
+import { useToast } from '@/hooks/use-toast'
 
 interface DeleteTableButtonProps {
     tableId: string
@@ -23,6 +24,7 @@ interface DeleteTableButtonProps {
 }
 
 export function DeleteTableButton({ tableId, tableName }: DeleteTableButtonProps) {
+    const { toast } = useToast()
     const [isPending, startTransition] = useTransition()
     const router = useRouter()
 
@@ -30,10 +32,15 @@ export function DeleteTableButton({ tableId, tableName }: DeleteTableButtonProps
         startTransition(async () => {
             try {
                 await deleteTableFromMyArchives(tableId)
+                toast({ title: 'Tabel Berhasil Dihapus', description: `Tabel "${tableName}" beserta seluruh datanya telah dihapus.` })
                 router.refresh()
-            } catch (error) {
+            } catch (error: any) {
                 console.error('Error deleting table:', error)
-                alert('Gagal menghapus tabel')
+                toast({
+                    title: 'Gagal Menghapus Tabel',
+                    description: error.message || 'Terjadi kesalahan saat menghapus tabel.',
+                    variant: 'destructive'
+                })
             }
         })
     }

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import {
     Card,
@@ -22,7 +23,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { Trash2, PlusCircle, Save, Loader2, HardDrive, CheckCircle2, ChevronRight, GripVertical } from 'lucide-react';
+import { Trash2, PlusCircle, Save, Loader2, HardDrive, CheckCircle2, ChevronRight, GripVertical, ExternalLink } from 'lucide-react';
 import { toast } from 'sonner';
 import { saveTableStructure, ColumnDef } from './actions';
 import { Badge } from '@/components/ui/badge';
@@ -247,9 +248,22 @@ export function ColumnBuilder({ tableId, initialColumns }: ColumnBuilderProps) {
                                                     placeholder="https://script.google.com/macros/s/..."
                                                     className="font-mono text-xs bg-white text-blue-600"
                                                 />
-                                                <p className="text-[10px] text-muted-foreground">
-                                                    Masukkan Web App URL dari deployment Google Apps Script Anda untuk menangani upload file.
-                                                </p>
+                                                <div className="flex items-center justify-between">
+                                                    <p className="text-[10px] text-muted-foreground">
+                                                        Masukkan Web App URL dari deployment Google Apps Script Anda untuk menangani upload file.
+                                                    </p>
+                                                    <Button
+                                                        variant="link"
+                                                        size="sm"
+                                                        className="h-auto p-0 text-[10px] text-blue-600 flex items-center gap-1"
+                                                        asChild
+                                                    >
+                                                        <Link href="/docs/google-drive-integration" target="_blank">
+                                                            <ExternalLink className="h-3 w-3" />
+                                                            Panduan Integrasi
+                                                        </Link>
+                                                    </Button>
+                                                </div>
                                             </div>
                                         )}
                                     </div>

@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { AlertTriangle } from 'lucide-react'
 import {
     AlertDialog,
     AlertDialogAction,
@@ -63,12 +64,15 @@ export function DeleteTeamDialog({ teamId, teamName, memberCount, trigger }: Del
                         <AlertDialogDescription>
                             Apakah Anda yakin ingin menghapus tim {teamName}?
                             {memberCount > 0 && (
-                                <span className="block mt-2 text-amber-600">
-                                    ⚠️ Tim ini memiliki {memberCount} anggota. 
-                                    Anggota akan dipindahkan keluar dari tim.
+                                <span className="flex items-start gap-2 mt-3 p-3 bg-amber-50 border border-amber-200 rounded-md text-amber-700">
+                                    <AlertTriangle className="h-4 w-4 flex-shrink-0 mt-0.5" />
+                                    <span className="text-sm">
+                                        Tim ini memiliki {memberCount} anggota. 
+                                        Anggota akan dipindahkan keluar dari tim.
+                                    </span>
                                 </span>
                             )}
-                            Tindakan ini tidak dapat dibatalkan.
+                            <span className="block mt-2">Tindakan ini tidak dapat dibatalkan.</span>
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>

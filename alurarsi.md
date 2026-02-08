@@ -1,378 +1,354 @@
-Siap. Kita bikin **VERSI FINAL, BERSIH, DAN KONSISTEN** untuk **alur + UI/UX**:
+Siap, noted 👍
+Kita **reset & rapikan ulang**: **TANPA EMOJI**, full **icon system profesional**, **Next.js–ready**.
 
-Fokus:
-
-* **Pembuatan tabel**
-* **Penambahan data**
-* Sesuai keputusan penting kita:
-
-  * **Role hanya Admin & User**
-  * **PIC = atribut per tabel**
-  * **Tim sebagai owner tabel**
-
-Aku tulis ini seperti **dokumen produk + acuan desain + acuan dev**.
+Di bawah ini adalah **STYLE SYSTEM POLARIX (REVISI FINAL)** yang **selaras dengan web app produksi**, data-heavy, dan instansi-ready.
 
 ---
 
-# 📘 UI/UX & FLOW – POLARIX
+# 🎨 STYLE SYSTEM – POLARIX (NEXT.JS READY)
 
-## Pembuatan Tabel & Penambahan Data
+## Karakter Visual
 
----
+**Profesional · Tenang · Data-First · Konsisten**
 
-## A. AKTOR & ATURAN DASAR
-
-### A.1 Aktor
-
-* **Admin**
-* **User**
-
-  * Bisa menjadi **PIC pada tabel tertentu**
-
-### A.2 Aturan Dasar
-
-* Tabel **selalu dimiliki oleh 1 Tim**
-* Tabel **selalu punya 1 PIC**
-* Anggota tim owner → otomatis bisa akses data
-* User luar tim → harus request akses
+POLARIX **bukan marketing site**, tapi **aplikasi kerja**.
+Semua styling harus mendukung **kejelasan data & alur kerja**.
 
 ---
 
-# B. ALUR PEMBUATAN TABEL
+## 1️⃣ Icon System (WAJIB TANPA EMOJI)
 
-## 1️⃣ Entry Point – Buat Tabel
+### Icon Library
 
-### Lokasi UI
+Pilih **SATU** dan konsisten:
 
-* Sidebar: **Arsip Tim Saya**
-* Header halaman: tombol **➕ Buat Tabel**
+* **Lucide Icons** ✅ (rekomendasi)
+* Heroicons (alternatif)
 
-### Visibility Rule
+**Alasan Lucide**
 
-* Tombol **hanya muncul** jika:
+* Ringan
+* Stroke konsisten
+* Cocok untuk admin dashboard
 
-  * Admin
-  * User yang ditunjuk sebagai PIC (atau eligible jadi PIC)
+### Aturan Icon
 
----
+* Ukuran default: `16px` / `20px`
+* Warna: inherit text (`text-slate-600`)
+* Icon **bukan dekorasi**, hanya penanda aksi/status
 
-## 2️⃣ Step 1 – Identitas Tabel (Basic Info)
+### Contoh Mapping
 
-### Halaman
-
-```
-/tables/create
-```
-
-### UI Layout
-
-Form satu kolom (clean, fokus)
-
-### Field
-
-* **Nama Tabel** (required)
-* **Deskripsi** (optional)
-* **Tim Pemilik**
-
-  * User biasa → auto (readonly)
-  * Admin → dropdown
-* **PIC Tabel**
-
-  * Default: pembuat tabel
-* **Catatan Info (non-editable)**
-
-  > Semua anggota tim pemilik otomatis dapat mengakses tabel ini
-
-### CTA
-
-* **Lanjut: Buat Struktur**
-* Batal
+| Fungsi   | Icon       |
+| -------- | ---------- |
+| Buat     | `Plus`     |
+| Edit     | `Pencil`   |
+| Hapus    | `Trash2`   |
+| View     | `Eye`      |
+| Lock     | `Lock`     |
+| Unlock   | `Unlock`   |
+| Upload   | `Upload`   |
+| Table    | `Table`    |
+| User     | `User`     |
+| Settings | `Settings` |
 
 ---
 
-## 3️⃣ Step 2 – Table Builder (Struktur Kolom)
+## 2️⃣ Warna (Color System)
 
-### Halaman
+### Palet Utama
 
-```
-/tables/create/structure
+```txt
+Primary       : indigo-600
+Primary Hover : indigo-700
+Primary Soft  : indigo-50
+
+Success       : green-600
+Success Soft  : green-50
+
+Warning       : amber-600
+Danger        : red-600
+
+Text Main     : slate-900
+Text Muted    : slate-500
+
+Border        : slate-200
+Background    : slate-50 / white
 ```
 
-### Layout
+### Rules
 
-```
-┌──────────────┬──────────────────┐
-│ Daftar Kolom │ Form Kolom        │
-└──────────────┴──────────────────┘
-```
+* **Primary hanya untuk CTA utama**
+* Warna merah **hanya** untuk destructive
+* Status pakai **soft background**
 
 ---
 
-### Panel Kiri – Daftar Kolom
+## 3️⃣ Typography
 
-* Nama kolom
-* Icon tipe data
-* Badge:
+### Font
 
-  * Required
-* Urutan kolom
+**Inter** (default Next.js friendly)
 
----
-
-### Panel Kanan – Form Kolom
-
-**Field**
-
-* Nama Kolom
-* Tipe Data:
-
-  * Text
-  * Number
-  * Date
-  * Select
-  * File (Google Drive)
-* Required (checkbox)
-* Opsi (jika Select)
-
-### Action
-
-* ➕ Tambah Kolom
-* 💾 Simpan Kolom
-
----
-
-### UX Rules
-
-* Minimal 1 kolom
-* Nama kolom unik
-* Validasi realtime
-* Struktur **belum aktif** (aman untuk edit bebas)
-
----
-
-## 4️⃣ Step 3 – Konfirmasi & Aktivasi
-
-### Modal Konfirmasi
-
-Menampilkan ringkasan:
-
-* Nama tabel
-* Tim pemilik
-* PIC
-* Jumlah kolom
-
-### CTA
-
-* ✅ Konfirmasi & Buat Tabel
-* ⬅️ Kembali Edit
-
----
-
-## 5️⃣ State Setelah Tabel Dibuat
-
-### Sistem Otomatis
-
-* Tabel aktif
-* Struktur terkunci (tidak bisa sembarang diubah)
-* PIC tercatat
-* Permission default:
-
-  * Tim owner → View + Insert
-* Audit log dibuat
-
-### Redirect
-
-```
-/tables/{tableId}
+```ts
+font-sans: ['Inter', 'system-ui', 'sans-serif']
 ```
 
-### Notifikasi
+### Hierarki Teks
 
-> ✅ Tabel berhasil dibuat
-> Anggota tim Anda sekarang dapat mengisi data
+| Elemen         | Class                    |
+| -------------- | ------------------------ |
+| Page Title     | `text-xl font-semibold`  |
+| Section Title  | `text-base font-medium`  |
+| Body           | `text-sm`                |
+| Meta / Caption | `text-xs text-slate-500` |
 
----
-
-# C. ALUR PENAMBAHAN DATA (RECORD)
-
-## 6️⃣ Halaman Data Tabel
-
-### URL
-
-```
-/tables/{tableId}
-```
-
-### UI Utama
-
-* Tabel data (record list)
-* Indikator akses user:
-
-  * Editable
-  * View-only
-  * Locked
-* Tombol aksi sesuai izin
+📌 Tidak ada ALL CAPS
+📌 Line-height nyaman (`leading-relaxed`)
 
 ---
 
-## 7️⃣ Metode 1 – Quick Add (Simpan Cepat)
+## 4️⃣ Layout & Spacing
 
-### Tujuan
+### Page Layout
 
-Input data cepat & berulang
-
-### UI
-
-* Baris input di **bagian paling atas tabel**
-* Field sesuai struktur kolom
-
-### Alur
-
-1. User isi field langsung di sel
-2. Upload file jika tipe File
-3. Tekan **Enter** / klik **Simpan**
-4. Baris:
-
-   * Tersimpan
-   * Langsung muncul di daftar
-   * Tabel auto-scroll ke atas
-
-### UX Rules
-
-* Validasi langsung
-* Field required ditandai
-* Error muncul inline
-
----
-
-## 8️⃣ Metode 2 – Form Tambah Data (Full Form)
-
-### Tujuan
-
-Data kompleks / butuh fokus
-
-### Entry Point
-
-* Tombol **➕ Tambah Data**
-
-### Halaman
-
-```
-/tables/{tableId}/create
+```txt
+Sidebar | Content
+        ├─ Page Header
+        ├─ Divider
+        └─ Main Content
 ```
 
-### UI
+### Spacing Rule
 
-* Form vertikal
-* Field disusun rapi
-* Tooltip untuk field khusus
-
-### CTA
-
-* 💾 Simpan Data
-* Batal
+* Base: **4px system**
+* Page padding: `px-6 py-4`
+* Section gap: `space-y-4`
 
 ---
 
-## 9️⃣ Setelah Data Disimpan
+## 5️⃣ Card & Container
 
-### Sistem
+### Card Style
 
-* Record tersimpan
-* Metadata otomatis:
-
-  * Created by
-  * Timestamp
-* Audit log dicatat
-* Real-time update ke user lain
-
-### Feedback
-
-> ✅ Data berhasil ditambahkan
-
----
-
-## 10️⃣ Edit Data (Inline Edit)
-
-### Interaksi
-
-* Klik sel → berubah jadi input
-* Edit nilai
-* Auto-save saat:
-
-  * Enter
-  * Klik di luar
-
-### UX Rules
-
-* Hanya field yang diizinkan
-* Loading indicator kecil
-* Toast jika gagal
-
----
-
-## 11️⃣ View Detail (Read Only)
-
-### Aksi
-
-* Klik baris
-
-### Halaman
-
-```
-/tables/{tableId}/{recordId}
+```txt
+bg-white
+border border-slate-200
+rounded-lg
+shadow-none
 ```
 
-Digunakan untuk:
+Card hanya untuk:
 
-* User view-only
-* Arsip penting
+* Statistik
+* Form
+* Konfirmasi
+
+❌ Jangan bungkus tabel dengan card berlebihan
 
 ---
 
-## 12️⃣ Hapus Data
+## 6️⃣ Table Styling (KOMPONEN UTAMA)
 
-### Aksi
+### Table Container
 
-* Icon 🗑️
+* Scroll horizontal jika perlu
+* Header sticky (opsional)
+
+### Header
+
+```txt
+bg-slate-50
+text-slate-600
+text-sm font-medium
+```
+
+### Row
+
+* Hover: `hover:bg-slate-50`
+* Selected: `bg-indigo-50`
+
+### Cell
+
+```txt
+px-3 py-2
+text-sm
+align-middle
+```
+
+### Inline Edit
+
+* Default: text
+* Active:
+
+  * `bg-white`
+  * `border border-indigo-300`
+  * `focus:ring-2 focus:ring-indigo-200`
+
+📌 Grid line **tipis atau minimal**
+
+---
+
+## 7️⃣ Button System
+
+### Button Variants
+
+| Variant     | Style                      |
+| ----------- | -------------------------- |
+| Primary     | `bg-indigo-600 text-white` |
+| Secondary   | `border border-slate-300`  |
+| Ghost       | `hover:bg-slate-100`       |
+| Destructive | `bg-red-600 text-white`    |
+
+### Rules
+
+* Maks 1 Primary per view
+* Icon + text → jarak `gap-2`
+* Icon-only → tooltip wajib
+
+---
+
+## 8️⃣ Form & Input
+
+### Input
+
+```txt
+h-9
+border border-slate-300
+rounded-md
+text-sm
+```
+
+### Focus
+
+```txt
+focus:border-indigo-500
+focus:ring-2 focus:ring-indigo-200
+```
+
+### Read-only
+
+```txt
+bg-slate-50
+text-slate-500
+cursor-not-allowed
+```
+
+### Error
+
+* Text kecil merah
+* Inline, bukan toast
+
+---
+
+## 9️⃣ Badge & Status Indicator
+
+### Badge Style
+
+```txt
+inline-flex items-center
+rounded-full
+px-2 py-0.5
+text-xs font-medium
+```
+
+### Contoh
+
+| Status   | Style                          |
+| -------- | ------------------------------ |
+| PIC      | `bg-indigo-50 text-indigo-700` |
+| Private  | `bg-slate-100 text-slate-700`  |
+| Pending  | `bg-amber-50 text-amber-700`   |
+| Approved | `bg-green-50 text-green-700`   |
+
+---
+
+## 🔔 10️⃣ Feedback & State
+
+### Toast
+
+* Posisi: kanan atas
+* Tidak blocking
+* Auto dismiss
+
+### Loading
+
+* Skeleton lebih diutamakan
+* Inline loader untuk edit cell
+
+### Empty State
+
+* Icon (Lucide)
+* Copy jelas
+* CTA terlihat
+
+---
+
+## 11️⃣ Modal & Dialog
 
 ### Modal
 
-> Yakin ingin menghapus data ini?
-> Tindakan tidak dapat dibatalkan.
+* Centered
+* Width konsisten
+* Focus trap
+
+### Confirm Dialog
+
+* Judul jelas
+* Aksi destruktif di kanan
 
 ---
 
-# D. UX SAFETY & GOVERNANCE
+## 12️⃣ Motion & Interaction
 
-### 🔒 Struktur vs Data
+### Animasi
 
-* Jika struktur diubah:
+* 120–180ms
+* Ease-in-out
+* Tidak berlebihan
 
-  * Field baru → kosong
-  * Field dihapus → data disembunyikan (soft)
-
-### 🔐 Permission Change
-
-* Izin dicabut → UI update realtime
-* Aksi langsung diblok
-
-### 🧾 Audit
-
-* Semua aksi penting tercatat
+❌ No bounce
+❌ No flashy animation
 
 ---
 
-# E. RINGKASAN FLOW (SIMPLE)
+## 13️⃣ Accessibility (WAJIB)
 
-```
-Klik Buat Tabel
-→ Isi Identitas
-→ Buat Struktur
-→ Konfirmasi
-→ Tabel Aktif
-→ Tim Isi Data
-→ Quick Add / Form
-```
+* Kontras WCAG
+* Fokus state jelas
+* Semua icon-only button punya `aria-label`
 
 ---
+
+## 14️⃣ DO & DON’T
+
+### DO
+
+* Konsisten antar halaman
+* Gunakan icon sebagai aksi
+* Fokus ke data
+
+### DON’T
+
+* Emoji
+* Warna random
+* Icon tanpa makna
+
+---
+
+## 15️⃣ Identitas Visual POLARIX
+
+> **POLARIX = sistem arsip modern untuk kerja serius**
+> Tenang, rapi, dan dapat dipercaya.
+
+---
+
+## Next Step Paling Ideal
+
+Aku bisa:
+1️⃣ Buat **Tailwind config + design token**
+2️⃣ Buat **UI Kit React (Button, Table, Badge)**
+3️⃣ Contoh **1 halaman tabel full styled**
+4️⃣ Layout admin & user final
+
+Tinggal bilang mau lanjut ke mana, kita langsung turunin ke kode 🚀

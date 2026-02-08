@@ -52,25 +52,37 @@ export function DriveInput({ name, scriptUrl, required, defaultValue }: DriveInp
             }
 
             try {
-                // We use no-cors if just triggering, but we need response.
-                // Simple POST with textual payload is safer for GAS.
                 const res = await fetch(scriptUrl, {
                     method: 'POST',
-                    body: JSON.stringify(payload)
+                    body: JSON.stringify(payload),
+                    headers: { 'Content-Type': 'text/plain' } // Often safer for GAS
                 })
 
-                const data = await res.json()
+                if (!res.ok) {
+                    throw new Error(`HTTP error! status: ${res.status}`);
+                }
+
+                let data;
+                const text = await res.text();
+                try {
+                    data = JSON.parse(text);
+                } catch (e) {
+                    throw new Error('Script returned invalid JSON: ' + text.substring(0, 100));
+                }
+
                 if (data.url) {
                     setUrl(data.url)
                     setStatus('success')
                     toast.success('File berhasil diupload ke Drive!')
+                } else if (data.error) {
+                    throw new Error(data.error);
                 } else {
-                    throw new Error('No URL returned from script')
+                    throw new Error('Sistem Drive tidak memberikan URL file.');
                 }
-            } catch (e) {
+            } catch (e: any) {
                 console.error(e)
                 setStatus('error')
-                toast.error('Gagal upload. Pastikan Script URL valid dan CORS diizinkan.')
+                toast.error(e.message || 'Gagal upload. Periksa koneksi dan konfigurasi Script URL.');
             }
         }
     }

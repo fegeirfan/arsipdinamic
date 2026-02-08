@@ -1,6 +1,7 @@
 'use server'
 
 import { createClient } from '@/utils/supabase/server'
+import { createAdminClient } from '@/utils/supabase/admin'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 
@@ -189,14 +190,51 @@ export async function deleteTableFromMyArchives(tableId: string) {
         throw new Error('Anda tidak memiliki izin untuk menghapus tabel ini')
     }
 
-    const { error } = await supabase
+    // Use admin client to bypass RLS for deletion
+    // This ensures that even if policies are restrictive or CASCADE is missing, the deletion succeeds
+    const adminSupabase = createAdminClient()
+
+    // 1. Delete associated permissions
+    const { error: permError } = await adminSupabase
+        .from('table_permissions')
+        .delete()
+        .eq('table_id', tableId)
+
+    if (permError) console.warn('Warning: Could not delete table permissions', permError)
+
+    // 2. Delete associated access requests (important: these miss ON DELETE CASCADE in DB)
+    const { error: reqError } = await adminSupabase
+        .from('access_requests')
+        .delete()
+        .eq('table_id', tableId)
+
+    if (reqError) console.warn('Warning: Could not delete access requests', reqError)
+
+    // 3. Delete associated records
+    const { error: recError } = await adminSupabase
+        .from('archive_records')
+        .delete()
+        .eq('table_id', tableId)
+
+    if (recError) console.warn('Warning: Could not delete archive records', recError)
+
+    // 4. Delete associated columns
+    const { error: colError } = await adminSupabase
+        .from('archive_columns')
+        .delete()
+        .eq('table_id', tableId)
+
+    if (colError) console.warn('Warning: Could not delete archive columns', colError)
+
+    // 5. Finally delete the table itself
+    const { error } = await adminSupabase
         .from('archive_tables')
         .delete()
         .eq('id', tableId)
 
     if (error) {
         console.error('Error deleting table:', error)
-        throw new Error('Gagal menghapus tabel')
+        throw new Error('Gagal menghapus tabel: ' + error.message)
     }
 
     revalidatePath('/dashboard/my-archives')

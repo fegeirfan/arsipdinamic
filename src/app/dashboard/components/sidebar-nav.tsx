@@ -43,7 +43,11 @@ export function AppSidebarNav({ isMobile = false, role, isPic = false }: { isMob
         href="/dashboard"
         className="my-4 flex items-center gap-2 text-lg font-semibold"
       >
-        <GanttChartSquare className="h-6 w-6 text-sidebar-accent" />
+        <img
+          src="/logo.png"
+          alt="POLARIX Logo"
+          className="h-6 w-6 object-contain"
+        />
         <span className="font-headline">POLARIX</span>
       </Link>
       {navItems.map(({ href, icon: Icon, label }) => {

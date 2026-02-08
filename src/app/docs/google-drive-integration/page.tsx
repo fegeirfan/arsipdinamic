@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle2, Copy, Terminal, Globe, Key, FolderOpen, ArrowRight, FileCode, Check } from 'lucide-react';
+import { CheckCircle2, Copy, Terminal, Globe, Key, FolderOpen, ArrowRight, FileCode, Check, AlertTriangle } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
 
@@ -274,9 +274,10 @@ export default function GoogleDriveDocsPage() {
                 </ol>
                 
                 <Alert variant="destructive" className="mt-6 bg-red-50 border-red-200">
-                  <AlertTitle className="text-red-800 font-bold">⚠️ Penting!</AlertTitle>
+                  <AlertTriangle className="h-4 w-4" />
+                  <AlertTitle className="text-red-800 font-bold">Penting!</AlertTitle>
                   <AlertDescription className="text-red-700">
-                    Pastikan <strong>Who has access</strong>设置为 <code className="bg-red-100 px-2 py-0.5 rounded">Anyone</code>, 
+                    Pastikan <strong>Who has access</strong> 设置为 <code className="bg-red-100 px-2 py-0.5 rounded">Anyone</code>, 
                     jika tidak aplikasi tidak akan dapat mengakses endpoint ini.
                   </AlertDescription>
                 </Alert>

@@ -239,7 +239,7 @@ export async function AdminDashboard() {
                                 <Clock className="h-4 w-4 text-sidebar-accent" />
                                 Lihat Request Akses
                                 {pendingRequests ? (
-                                    <Badge className="ml-auto bg-sidebar-accent" size="sm">{pendingRequests}</Badge>
+                                    <Badge className="ml-auto bg-indigo-600 text-white">{pendingRequests}</Badge>
                                 ) : null}
                             </Link>
                         </Button>

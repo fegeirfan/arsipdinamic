@@ -21,17 +21,25 @@ export function RecordRowActions({
   recordId,
   canEdit,
   canDelete,
+  onDeleteOptimistic,
 }: {
   tableId: string
   recordId: string
   canEdit: boolean
   canDelete: boolean
+  onDeleteOptimistic?: () => void
 }) {
   const [open, setOpen] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const { toast } = useToast()
 
   async function handleDelete() {
+    if (onDeleteOptimistic) {
+      onDeleteOptimistic()
+      setOpen(false)
+      return
+    }
+
     setDeleting(true)
     const result = await deleteRecord(tableId, recordId)
     setDeleting(false)
