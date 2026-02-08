@@ -17,6 +17,9 @@ const lexend = Lexend({
 export const metadata: Metadata = {
   title: 'POLARIX: Arsip Digital Tanpa Batas Struktur',
   description: 'Kelola arsip secara fleksibel, dinamis, dan terkontrol tanpa coding. Dibangun dengan Firebase Studio.',
+  icons: {
+    icon: '/logo.png',
+  },
 };
 
 export default function RootLayout({
